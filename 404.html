@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>404 Not Found</title>
+<style>
+body {
+background-color: black;
+text-align: center;
+}
+</style>
+</head>
+<body>
+<script>
+
+var canvas = document.createElement('canvas');
+canvas.width = window.innerWidth / 1.01;
+canvas.height = window.innerHeight / 1.75;
+var c = canvas.getContext('2d');
+var fontSize = window.innerWidth / 6;
+
+window.addEventListener('load', start);
+window.addEventListener('mousemove', mouseMove);
+
+function start() {
+window.requestAnimationFrame(loop);
+c.fillStyle = 'white';
+c.font = fontSize.toString() + 'px sans-serif';
+c.textAlign = 'center';
+c.fillText('404', window.innerWidth / 2, window.innerHeight / 3);
+c.font = fontSize / 3.5.toString() + 'px sans-serif';
+c.fillText('Something Went Wrong.', window.innerWidth / 2, window.innerHeight / 2);
+}
+
+function loop() {
+window.requestAnimationFrame(loop);
+c.fillStyle = 'black';
+}
+
+window.onresize = function() {
+canvas.width = window.innerWidth / 1.01;
+canvas.height = window.innerHeight / 1.75;
+var fontSize = window.innerWidth / 6;
+c.fillStyle = 'white';
+c.font = fontSize.toString() + 'px sans-serif';
+c.textAlign = 'center';
+c.fillText('404', window.innerWidth / 2, window.innerHeight / 3);
+c.font = fontSize / 3.5.toString() + 'px sans-serif';
+c.fillText('Something Went Wrong.', window.innerWidth / 2, window.innerHeight / 2);
+}
+
+function mouseMove(event) {
+c.fillStyle = 'black';
+c.fillRect(event.clientX, event.clientY, (window.innerHeight + window.innerWidth) / 100, (window.innerHeight + window.innerWidth) / 100);
+}
+
+document.body.appendChild(canvas);
+
+</script>
+
+<a href="index.html"><img src="home.png" width="150" height="150" alt="home"><a/>
+
+</body>
+</html>
