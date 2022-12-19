@@ -1,0 +1,936 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>pew pew</title>
+<style>
+#crosshair {
+position: absolute;
+top: 50%;
+width: 100%;
+text-align: center;
+color: white;
+font-size: 40px;
+padding: 0px;
+}
+
+#dialog {
+position: absolute;
+top: 10px;
+width: 100%;
+text-align: center;
+color: black;
+font-size: 30px;
+padding: 0px;
+background-color: white;
+}
+
+#health {
+position: absolute;
+bottom: 1px;
+left: 16px;
+width: 1%;
+font-size: 30px;
+background-color: red;
+border: 3px solid black;
+border-radius: 5px;
+}
+
+body { margin:0; }
+</style>
+</head>
+<body>
+<p id="crosshair">+<p>
+<p id="dialog"><p>
+<p id="health">HEALTH<p>
+
+<script src="three.js"></script>
+<script src="PointerLockControls.js"></script>
+<script>
+
+var lookX = 0;
+var lookY = 0;
+var wDown = false;
+var aDown = false;
+var dDown = false;
+var sDown = false;
+var spaceDown = false;
+var mouseDown = 0;
+var rightMouseDown = 0;
+var gun = 'pistol';
+// pistol, machineGun
+const maxHealth = 10;
+var enemy1Health = maxHealth;
+var enemy2Health = maxHealth;
+var enemy3Health = maxHealth;
+var enemy4Health = 30;
+var hitMarkerShow = 0;
+var onGround = true;
+var jumping = 0;
+var gravityMultiplier = 1;
+var dialogShowTime = 350;
+var dialogText = "We must destroy our enemies' base. You are here to steal the only plane powerful enough to do so.";
+var playerHealth = 100;
+var inPlane = false;
+var gameEnded = false;
+
+window.addEventListener('keydown', keyDown);
+window.addEventListener('keyup', keyUp);
+window.addEventListener('mousemove', mouseMove);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+var controls = new THREE.PointerLockControls(camera, document.body);
+const _vector = new THREE.Vector3();
+
+// sensors
+const rightGeo = new THREE.BoxGeometry(.1, .9, .9);
+const frontGeo = new THREE.BoxGeometry(.9, .9, .1);
+const topGeo = new THREE.BoxGeometry(.6, 0, .6);
+const greenMat = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+const leftSensor = new THREE.Mesh( rightGeo, greenMat );
+const rightSensor = new THREE.Mesh( rightGeo, greenMat );
+const frontSensor = new THREE.Mesh( frontGeo, greenMat );
+const backSensor = new THREE.Mesh( frontGeo, greenMat );
+const bottomSensor = new THREE.Mesh( topGeo, greenMat );
+scene.add(leftSensor);
+scene.add(rightSensor);
+scene.add(frontSensor);
+scene.add(backSensor);
+scene.add(bottomSensor);
+leftSensor.visible = false;
+rightSensor.visible = false;
+frontSensor.visible = false;
+backSensor.visible = false;
+bottomSensor.visible = false;
+
+// enemy1 plus weapons
+const smallGeo = new THREE.BoxGeometry(.25, .25, .25);
+const whiteMat = new THREE.MeshBasicMaterial({color: 0xffffff});
+const machineGunBullet = new THREE.Mesh(smallGeo, whiteMat);
+scene.add(machineGunBullet);
+machineGunBullet.position.y = -1000;
+machineGunBullet.visible = false;
+const pistolBullet = new THREE.Mesh(smallGeo, whiteMat);
+scene.add(pistolBullet);
+pistolBullet.position.y = -100000000000;
+const lightGreyMat = new THREE.MeshBasicMaterial({color: 0x606060});
+const missile = new THREE.Mesh(smallGeo, lightGreyMat);
+scene.add(missile);
+missile.position.y = -1000;
+const darkRedMat = new THREE.MeshBasicMaterial({color: 0x850101});
+const ballGeo = new THREE.CapsuleGeometry( 2, 0.5, 32, 64 );
+const missileExplosion = new THREE.Mesh(ballGeo, darkRedMat);
+scene.add(missileExplosion);
+missileExplosion.visible = false;
+missileExplosion.position.y = -1000;
+const cubeGeo = new THREE.BoxGeometry(1, 1, 1);
+const enemyGeo = new THREE.CapsuleGeometry( 0.5, 0.5, 32, 64 );
+const purpleMat = new THREE.MeshBasicMaterial({color: 0xa020f0});
+const enemy1 = new THREE.Mesh(enemyGeo, darkRedMat);
+scene.add(enemy1);
+const looker1 = new THREE.Mesh(smallGeo, purpleMat);
+scene.add(looker1);
+looker1.visible = false;
+const looker2 = new THREE.Mesh(smallGeo, purpleMat);
+scene.add(looker2);
+looker2.visible = false;
+const eyeGeo = new THREE.CapsuleGeometry( 0.05, 0.05, 32, 64 );
+const blackMat = new THREE.MeshBasicMaterial({color: 0x000000});
+const enemy1eye1 = new THREE.Mesh(eyeGeo, blackMat);
+scene.add(enemy1eye1);
+const enemy1eye2 = new THREE.Mesh(eyeGeo, blackMat);
+scene.add(enemy1eye2);
+const enemyHitBoxGeo = new THREE.BoxGeometry(0.5, 1, 0.5);
+const enemy1HitBox = new THREE.Mesh(enemyHitBoxGeo, lightGreyMat);
+scene.add(enemy1HitBox);
+enemy1HitBox.visible = false;
+const healthBarGeo = new THREE.BoxGeometry(1, 0.3, 0.05);
+const healthBarBackgroundGeo = new THREE.BoxGeometry(3, 0.3, 0);
+const redMat = new THREE.MeshBasicMaterial({color: 0xff0000});
+const healthBar = new THREE.Mesh(healthBarGeo, redMat);
+scene.add(healthBar);
+const healthBarBackground = new THREE.Mesh(healthBarBackgroundGeo, blackMat);
+scene.add(healthBarBackground);
+// enemies 2 and 3
+const enemy2 = new THREE.Mesh(enemyGeo, darkRedMat);
+scene.add(enemy2);
+const enemy2eye1 = new THREE.Mesh(eyeGeo, blackMat);
+scene.add(enemy2eye1);
+const enemy2eye2 = new THREE.Mesh(eyeGeo, blackMat);
+scene.add(enemy2eye2);
+const enemy2HitBox = new THREE.Mesh(enemyHitBoxGeo, lightGreyMat);
+scene.add(enemy2HitBox);
+enemy2HitBox.visible = false;
+const healthBar2 = new THREE.Mesh(healthBarGeo, redMat);
+scene.add(healthBar2);
+const healthBarBackground2 = new THREE.Mesh(healthBarBackgroundGeo, blackMat);
+scene.add(healthBarBackground2);
+const enemy2Bullet = new THREE.Mesh(smallGeo, whiteMat);
+scene.add(enemy2Bullet);
+enemy2Bullet.position.y = -1000;
+const looker3 = new THREE.Mesh(smallGeo, purpleMat);
+scene.add(looker3);
+looker3.visible = false;
+const looker4 = new THREE.Mesh(smallGeo, purpleMat);
+scene.add(looker4);
+looker4.visible = false;
+
+const enemy3 = new THREE.Mesh(enemyGeo, darkRedMat);
+scene.add(enemy3);
+const enemy3eye1 = new THREE.Mesh(eyeGeo, blackMat);
+scene.add(enemy3eye1);
+const enemy3eye2 = new THREE.Mesh(eyeGeo, blackMat);
+scene.add(enemy3eye2);
+const enemy3HitBox = new THREE.Mesh(enemyHitBoxGeo, lightGreyMat);
+scene.add(enemy3HitBox);
+enemy3HitBox.visible = false;
+const healthBar3 = new THREE.Mesh(healthBarGeo, redMat);
+scene.add(healthBar3);
+const healthBarBackground3 = new THREE.Mesh(healthBarBackgroundGeo, blackMat);
+scene.add(healthBarBackground3);
+const enemy3Bullet = new THREE.Mesh(smallGeo, whiteMat);
+scene.add(enemy3Bullet);
+enemy3Bullet.position.y = -1000;
+const looker5 = new THREE.Mesh(smallGeo, purpleMat);
+scene.add(looker5);
+looker5.visible = false;
+const looker6 = new THREE.Mesh(smallGeo, purpleMat);
+scene.add(looker6);
+looker6.visible = false;
+
+const enemy4 = new THREE.Mesh(enemyGeo, blackMat);
+scene.add(enemy4);
+const enemy4eye1 = new THREE.Mesh(eyeGeo, redMat);
+scene.add(enemy4eye1);
+const enemy4eye2 = new THREE.Mesh(eyeGeo, redMat);
+scene.add(enemy4eye2);
+const enemy4HitBox = new THREE.Mesh(enemyHitBoxGeo, lightGreyMat);
+scene.add(enemy4HitBox);
+enemy4HitBox.visible = false;
+const healthBar4 = new THREE.Mesh(healthBarGeo, redMat);
+scene.add(healthBar4);
+const healthBarBackground4 = new THREE.Mesh(healthBarBackgroundGeo, blackMat);
+scene.add(healthBarBackground4);
+const looker7 = new THREE.Mesh(smallGeo, purpleMat);
+scene.add(looker7);
+looker7.visible = false;
+const looker8 = new THREE.Mesh(smallGeo, purpleMat);
+scene.add(looker8);
+looker8.visible = false;
+enemy4.position.y = -1000;
+const deepBlueMat = new THREE.MeshBasicMaterial({color: 0x0047ab});
+const lightSwordCarryGeo = new THREE.BoxGeometry(0.1, 1, 0.1);
+const lightSwordCarry = new THREE.Mesh(lightSwordCarryGeo, deepBlueMat);
+scene.add(lightSwordCarry);
+const lightSwordHitGeo = new THREE.BoxGeometry(0.1, 0.1, 1);
+const lightSwordHit = new THREE.Mesh(lightSwordHitGeo, deepBlueMat);
+scene.add(lightSwordHit);
+
+// structure
+const grey1Mat = new THREE.MeshBasicMaterial({color: 0x909090});
+const floorGeo = new THREE.BoxGeometry(50, 2, 50);
+const floor1 = new THREE.Mesh(floorGeo, grey1Mat);
+scene.add(floor1);
+floor1.position.y = -1.5;
+const wall1Geo = new THREE.BoxGeometry(4, 2, 1);
+const grey2Mat = new THREE.MeshBasicMaterial({color: 0x808080});
+const wall1 = new THREE.Mesh(wall1Geo, grey2Mat);
+scene.add(wall1);
+wall1.position.set(0, 0, 7);
+const wall2Geo = new THREE.BoxGeometry(1, 2, 5);
+const wall2 = new THREE.Mesh(wall2Geo, grey2Mat);
+scene.add(wall2);
+wall2.position.set(2, 0, 4.9);
+const wall3 = new THREE.Mesh(wall2Geo, grey2Mat);
+scene.add(wall3);
+wall3.position.set(-2, 0, 4.9);
+const ceiling1 = new THREE.Mesh(floorGeo, grey1Mat);
+scene.add(ceiling1);
+ceiling1.position.y = 2;
+const grey3Mat = new THREE.MeshBasicMaterial({color: 0x303030});
+const door1 = new THREE.Mesh(wall1Geo, grey3Mat);
+scene.add(door1);
+door1.position.set(0, 0, 3);
+const wall3Geo = new THREE.BoxGeometry(1, 2, 10);
+const wall4 = new THREE.Mesh(wall3Geo, grey2Mat);
+scene.add(wall4);
+wall4.position.set(-3, 0, -2.5);
+const cameraHitbox = new THREE.Mesh(cubeGeo, grey2Mat);
+scene.add(cameraHitbox);
+const wall5 = new THREE.Mesh(wall3Geo, grey2Mat);
+scene.add(wall5);
+wall5.position.set(3, 0, -2.5);
+const wall4Geo = new THREE.BoxGeometry(2, 2, 1);
+const wall6 = new THREE.Mesh(wall4Geo, grey2Mat);
+scene.add(wall6);
+wall6.position.set(-1.5, 0, -7);
+const door2 = new THREE.Mesh(wall1Geo, grey3Mat);
+scene.add(door2);
+door2.position.set(1.5, 0, -7.2);
+const enemy1Bullet = new THREE.Mesh(smallGeo, whiteMat);
+scene.add(enemy1Bullet);
+enemy1Bullet.position.y = -1000;
+const wall5Geo = new THREE.BoxGeometry(10, 2, 1);
+const wall7 = new THREE.Mesh(wall5Geo, grey2Mat);
+scene.add(wall7);
+wall7.position.set(-8.5, 0, -7);
+const wall8 = new THREE.Mesh(wall3Geo, grey2Mat);
+scene.add(wall8);
+wall8.position.set(3, 0, -12);
+const wall9 = new THREE.Mesh(wall3Geo, grey2Mat);
+scene.add(wall9);
+wall9.position.set(-13, 0, -16.5); // door wall
+const wall10 = new THREE.Mesh(wall5Geo, grey2Mat);
+scene.add(wall10);
+wall10.position.set(-8.5, 0, -17);
+const wall11 = new THREE.Mesh(wall5Geo, grey2Mat);
+scene.add(wall11);
+wall11.position.set(-2, 0, -17);
+const wall6Geo = new THREE.BoxGeometry(1, 2, 4);
+const door3 = new THREE.Mesh(wall6Geo, grey3Mat);
+scene.add(door3);
+door3.position.set(-13, 0, -9.5);
+const wall12 = new THREE.Mesh(wall1Geo, grey2Mat);
+scene.add(wall12);
+wall12.position.set(-15, 0, -12);
+const wall13 = new THREE.Mesh(wall6Geo, grey2Mat);
+scene.add(wall13);
+wall13.position.set(-17, 0, -9.5);
+const door4 = new THREE.Mesh(wall1Geo, grey3Mat);
+scene.add(door4);
+door4.position.set(-15.5, 0, -7);
+const wall14 = new THREE.Mesh(wall3Geo, grey2Mat);
+scene.add(wall14);
+wall14.position.set(-17, 0, -2.5);
+const wall15 = new THREE.Mesh(wall5Geo, grey2Mat);
+scene.add(wall15);
+wall15.position.set(-12, 0, 2.5);
+const door5 = new THREE.Mesh(wall1Geo, grey3Mat);
+scene.add(door5);
+door5.position.set(-5, 0, 2.5);
+const wall7Geo = new THREE.BoxGeometry(1, 2, 22);
+const wall16 = new THREE.Mesh(wall7Geo, grey2Mat);
+scene.add(wall16);
+wall16.position.set(-12, 0, 14);
+const wall8Geo = new THREE.BoxGeometry(1, 2, 20);
+const wall17 = new THREE.Mesh(wall8Geo, grey2Mat);
+scene.add(wall17);
+wall17.position.set(-2, 0, 15);
+const wall18 = new THREE.Mesh(wall5Geo, grey2Mat);
+scene.add(wall18);
+wall18.position.set(-7, 0, 25);
+wall18.visible = false;
+// plane
+const planeGrey = new THREE.MeshBasicMaterial({color: 0x101010});
+const planeGeo1 = new THREE.BoxGeometry(2, 1, 4);
+const planeCore = new THREE.Mesh(planeGeo1, planeGrey);
+scene.add(planeCore);
+planeCore.rotation.y = Math.PI;
+planeCore.position.set(-7, 0, 22);
+const wingGeo = new THREE.BoxGeometry(5, 0.5, 1);
+const planeWings = new THREE.Mesh(wingGeo, planeGrey);
+scene.add(planeWings);
+planeWings.position.set(-7, 0, 22);
+const driverAreaGeo = new THREE.CapsuleGeometry( 0.5, 0.5, 1, 3 );
+const driverArea = new THREE.Mesh(driverAreaGeo, redMat);
+scene.add(driverArea);
+driverArea.position.set(planeCore.position.x, planeCore.position.y + 0.5, planeCore.position.z);
+driverArea.rotation.y = planeCore.rotation.y;
+const planeMissileGeo = new THREE.BoxGeometry(0.5, 0.5, 2);
+const planeMissile = new THREE.Mesh(planeMissileGeo, purpleMat);
+scene.add(planeMissile);
+planeMissile.position.y = -1000;
+// enemy base 2
+const base2Geo = new THREE.BoxGeometry(30, 4, 30);
+const base2 = new THREE.Mesh(base2Geo, grey2Mat);
+scene.add(base2);
+base2.position.set(0, 0, 100);
+// power cores
+var powerCoreHealth = {one:2, two:2};
+const powerCoreGeo = new THREE.BoxGeometry(2, 4, 2);
+const powerCore1 = new THREE.Mesh(powerCoreGeo, deepBlueMat);
+scene.add(powerCore1);
+powerCore1.position.set(-12, 4, 100);
+const powerCore2 = new THREE.Mesh(powerCoreGeo, deepBlueMat);
+scene.add(powerCore2);
+powerCore2.position.set(12, 4, 100);
+const bigExplosionGeo = new THREE.CapsuleGeometry( 40, 40, 32, 64 );
+const bigExplosion = new THREE.Mesh(bigExplosionGeo, darkRedMat);
+scene.add(bigExplosion);
+bigExplosion.position.set(0, -100000, 0);
+
+cameraHitbox.visible = false;
+var platforms = [wall1, wall2, wall3, door1, wall4, wall5, wall6, door2, wall7, wall8, wall9, wall10, wall11, door3, wall12, wall13, door4, wall14, wall15, door5,
+wall16, wall17, wall18];
+
+enemy1.position.y = -10000;
+enemy2.position.y = -10000;
+enemy3.position.y = -10000;
+
+camera.position.z += 5;
+
+document.onclick = function(event) {
+if (!inPlane) {controls.lock();}
+if (event.button == 0) {
+
+if (shooting > 75 && gun == 'pistol') {
+shooting = 0
+}
+if (shootingMissile > 100 && gun == 'guidedMissileLauncher') {
+shootingMissile = 0
+}
+if (planeShooting > 75 && inPlane) {
+planeShooting = 0;
+}
+
+}
+}
+
+function animate() {
+if (!gameEnded) {
+renderer.render(scene, camera);
+gameLoop();
+requestAnimationFrame(animate);
+}
+}
+animate();
+
+function gameLoop() {
+shoot();
+move();
+zoom();
+limitLookY();
+if (gun == 'machineGun') {shootMachineGun();}
+shootMissile();
+turnTowardsPlayer(enemy1, looker1, looker2);
+turnTowardsPlayer(enemy2, looker3, looker4);
+turnTowardsPlayer(enemy3, looker5, looker6);
+turnTowardsPlayer(enemy4, looker7, looker8);
+attachEyes(enemy1eye1, enemy1eye2, enemy1);
+attachEyes(enemy2eye1, enemy2eye2, enemy2);
+attachEyes(enemy3eye1, enemy3eye2, enemy3);
+attachEyes(enemy4eye1, enemy4eye2, enemy4);
+placeHitBoxes();
+placeHealthBars();
+showHitMarker();
+placeSensors();
+sense();
+handleDialog();
+if (!inPlane) {camera.position.y = 0;}
+if (!inPlane) {cameraHitbox.position.set(camera.position.x, camera.position.y, camera.position.z);}
+enemyDie();
+enemyShoot();
+enemyMove();
+handleLightSword();
+showHealth();
+showInteract();
+controlPlane();
+planeShoot();
+handlePowerCores();
+playerDie();
+}
+
+var shooting = 10000;
+var storeRotationX = 0;
+function shoot() {
+if (shooting == 0) {
+pistolBullet.position.set(camera.position.x, camera.position.y, camera.position.z);
+forward(pistolBullet, .25)
+pistolBullet.rotation.y = lookX;
+storeRotationX = lookY;
+shooting += 1;
+pistolBullet.visible = true;
+}
+if (shooting <= 75 && shooting > 0) {
+forward(pistolBullet, .25);
+pistolBullet.position.y += storeRotationX / 3.142;
+shooting += 1;
+if (collide(pistolBullet, enemy1HitBox)) {enemy1Health -= 3.4; pistolBullet.position.y = -10000; hitMarkerShow = 10;}
+if (collide(pistolBullet, enemy2HitBox)) {enemy2Health -= 3.4; pistolBullet.position.y = -10000; hitMarkerShow = 10;}
+if (collide(pistolBullet, enemy3HitBox)) {enemy3Health -= 3.4; pistolBullet.position.y = -10000; hitMarkerShow = 10;}
+if (collide(pistolBullet, enemy4HitBox)) {enemy4Health -= 3.4; pistolBullet.position.y = -10000; hitMarkerShow = 10;}
+if (collidePlatforms(pistolBullet)) {pistolBullet.position.y = -1000000;}
+}
+if (shooting > 75) {
+pistolBullet.visible = false;
+}
+}
+
+var shootingMissile = 10000;
+function shootMissile() {
+if (shootingMissile == 0) {
+missile.position.set(camera.position.x, camera.position.y, camera.position.z);
+forward(missile, .25)
+missile.rotation.y = lookX;
+shootingMissile += 1;
+missile.visible = true;
+missileExplosion.visible = false;
+}
+if (shootingMissile <= 100 && shootingMissile > 0) {
+forward(missile, .15);
+missile.position.y += lookY / 3.12;
+missile.rotation.y = lookX;
+shootingMissile += 1;
+if (shootingMissile > 100) {
+missile.visible = false;
+missileExplosion.position.set(missile.position.x, missile.position.y, missile.position.z);
+missileExplosion.visible = true;}
+}
+}
+
+function mouseMove(event) {
+if (controls.isLocked) {
+lookX -= event.movementX / 500;
+lookX = Number(lookX.toFixed(3));
+lookY -= event.movementY / 500;
+lookY = Number(lookY.toFixed(3));
+camera.rotation.y = Number(camera.rotation.y.toFixed(3));
+camera.rotation.x = Number(camera.rotation.x.toFixed(3));
+}
+}
+
+function forward(mesh, amount) {
+_vector.setFromMatrixColumn( mesh.matrix, 0 );
+_vector.crossVectors( mesh.up, _vector );
+mesh.position.addScaledVector( _vector, amount );
+}
+
+function distance(mesh1, mesh2) {
+var xDis = mesh1.position.x - mesh2.position.x;
+var yDis = mesh1.position.z - mesh2.position.z;
+var zDis = mesh1.position.y - mesh2.position.y;
+var distances = Math.sqrt(xDis * xDis + yDis * yDis);
+distances = Math.sqrt(distances * distances + zDis * zDis);
+return distances;
+}
+
+function keyDown(event) {
+if (event.key == 'w') {wDown = true;}
+if (event.key == 'a') {aDown = true;}
+if (event.key == 'd') {dDown = true;}
+if (event.key == 's') {sDown = true;}
+if (event.key == ' ') {spaceDown = true;}
+if (event.key == 'e') {interact();}
+if (event.key == 'f') {document.documentElement.requestFullscreen();}
+}
+
+function keyUp(event) {
+if (event.key == 'w') {wDown = false;}
+if (event.key == 'a') {aDown = false;}
+if (event.key == 'd') {dDown = false;}
+if (event.key == 's') {sDown = false;}
+if (event.key == ' ') {spaceDown = false;}
+}
+
+function move() {
+if (wDown) {controls.moveForward(.1);}
+if (sDown) {controls.moveForward(-.1);}
+if (aDown) {controls.moveRight(-.1);}
+if (dDown) {controls.moveRight(.1);}
+}
+
+window.onmousedown = (event) => {  
+++mouseDown;
+if (event.button == 2) {
+++rightMouseDown;
+}
+}  
+window.onmouseup = () => {  
+--mouseDown;
+if (event.button == 2) {
+--rightMouseDown;
+}
+}
+
+function zoom() {
+if (rightMouseDown) {
+camera.fov = 35;
+camera.updateProjectionMatrix();
+} else {
+camera.fov = 75;
+camera.updateProjectionMatrix();
+}
+}
+
+function shootMachineGun() {
+if (mouseDown && !rightMouseDown) {
+machineGunBullet.position.set(camera.position.x, camera.position.y, camera.position.z);
+forward(machineGunBullet, .25)
+machineGunBullet.rotation.y = lookX;
+for (var i = 1; i < 100; i ++) {
+forward(machineGunBullet, .25);
+machineGunBullet.position.y += lookY / 4;
+if (collide(machineGunBullet, enemy1HitBox)) {machineGunBullet.position.y = -10000000; enemy1Health -= 0.2; hitMarkerShow = 10;}
+if (collide(machineGunBullet, enemy2HitBox)) {machineGunBullet.position.y = -10000000; enemy2Health -= 0.2; hitMarkerShow = 10;}
+if (collide(machineGunBullet, enemy3HitBox)) {machineGunBullet.position.y = -10000000; enemy3Health -= 0.2; hitMarkerShow = 10;}
+if (collide(machineGunBullet, enemy4HitBox)) {machineGunBullet.position.y = -10000000; enemy4Health -= 0.2; hitMarkerShow = 10;}
+if (collidePlatforms(machineGunBullet)) {machineGunBullet.position.y = -100000000;}
+}
+}
+}
+
+function limitLookY() {
+if (lookY > 1.571) {lookY = 1.571;}
+if (lookY < -1.571) {lookY = -1.571;}
+}
+
+function turnTowardsPlayer(mesh, looker1, looker2) {
+looker1.position.x = mesh.position.x;
+looker1.position.z = mesh.position.z;
+looker1.rotation.y = mesh.rotation.y - .2;
+forward(looker1, distance(mesh, camera));
+
+looker2.position.x = mesh.position.x;
+looker2.position.z = mesh.position.z;
+looker2.rotation.y = mesh.rotation.y + .2;
+forward(looker2, distance(mesh, camera));
+if (distance(looker1, camera) > distance(looker2, camera)) {mesh.rotation.y += .03;} else {mesh.rotation.y -= 0.03;}
+}
+
+function attachEyes(eye1, eye2, mesh) {
+eye1.position.set(mesh.position.x, mesh.position.y + 0.3, mesh.position.z);
+eye1.rotation.y = mesh.rotation.y + .3;
+forward(eye1, 0.5);
+
+eye2.position.set(mesh.position.x, mesh.position.y + 0.3, mesh.position.z);
+eye2.rotation.y = mesh.rotation.y - .3;
+forward(eye2, 0.5);
+}
+
+function collide(mesh, mesh2) {
+var meshXRight = mesh.position.x + mesh.geometry.parameters.width / 2;
+var meshXLeft = mesh.position.x - mesh.geometry.parameters.width / 2;
+var meshYUp = mesh.position.y + mesh.geometry.parameters.height / 2;
+var meshYDown = mesh.position.y - mesh.geometry.parameters.height / 2;
+var meshZRight = mesh.position.z + mesh.geometry.parameters.depth / 2;
+var meshZLeft = mesh.position.z - mesh.geometry.parameters.depth / 2;
+
+var mesh2XRight = mesh2.position.x + mesh2.geometry.parameters.width / 2;
+var mesh2XLeft = mesh2.position.x - mesh2.geometry.parameters.width / 2;
+var mesh2YUp = mesh2.position.y + mesh2.geometry.parameters.height / 2;
+var mesh2YDown = mesh2.position.y - mesh2.geometry.parameters.height / 2;
+var mesh2ZRight = mesh2.position.z + mesh2.geometry.parameters.depth / 2;
+var mesh2ZLeft = mesh2.position.z - mesh2.geometry.parameters.depth / 2;
+if (meshXRight >= mesh2XLeft && meshXLeft <= mesh2XRight && meshYUp >= mesh2YDown && meshYDown <= mesh2YUp && meshZRight >= mesh2ZLeft && meshZLeft <= mesh2ZRight) {
+return true;
+} else {
+return false;
+}
+}
+
+function placeHitBoxes() {
+enemy1HitBox.position.set(enemy1.position.x, enemy1.position.y + 0.3, enemy1.position.z);
+enemy2HitBox.position.set(enemy2.position.x, enemy2.position.y + 0.3, enemy2.position.z);
+enemy3HitBox.position.set(enemy3.position.x, enemy3.position.y + 0.3, enemy3.position.z);
+enemy4HitBox.position.set(enemy4.position.x, enemy4.position.y + 0.3, enemy4.position.z);
+}
+
+function placeHealthBars() {
+healthBar.position.set(enemy1.position.x, enemy1.position.y + 1, enemy1.position.z);
+healthBar.rotation.y = enemy1.rotation.y;
+healthBar.scale.x = enemy1Health / maxHealth * 3;
+healthBarBackground.position.set(enemy1.position.x, enemy1.position.y + 1, enemy1.position.z);
+healthBarBackground.rotation.y = enemy1.rotation.y;
+
+healthBar2.position.set(enemy2.position.x, enemy2.position.y + 1, enemy2.position.z);
+healthBar2.rotation.y = enemy2.rotation.y;
+healthBar2.scale.x = enemy2Health / maxHealth * 3;
+healthBarBackground2.position.set(enemy2.position.x, enemy2.position.y + 1, enemy2.position.z);
+healthBarBackground2.rotation.y = enemy2.rotation.y;
+
+healthBar3.position.set(enemy3.position.x, enemy3.position.y + 1, enemy3.position.z);
+healthBar3.rotation.y = enemy3.rotation.y;
+healthBar3.scale.x = enemy3Health / maxHealth * 3;
+healthBarBackground3.position.set(enemy3.position.x, enemy3.position.y + 1, enemy3.position.z);
+healthBarBackground3.rotation.y = enemy3.rotation.y;
+
+healthBar4.position.set(enemy4.position.x, enemy4.position.y + 1, enemy4.position.z);
+healthBar4.rotation.y = enemy4.rotation.y;
+healthBar4.scale.x = enemy4Health / 30 * 3;
+healthBarBackground4.position.set(enemy4.position.x, enemy4.position.y + 1, enemy4.position.z);
+healthBarBackground4.rotation.y = enemy4.rotation.y;
+}
+
+function showHitMarker() {
+if (hitMarkerShow > 0) {
+hitMarkerShow -= 1;
+document.getElementById('crosshair').innerHTML = '<+>';
+} else {
+document.getElementById('crosshair').innerHTML = '+';
+}
+}
+
+function placeSensors() {
+if (!inPlane) {
+leftSensor.position.x = camera.position.x - 0.5;
+leftSensor.position.z = camera.position.z;
+leftSensor.position.y = camera.position.y;
+
+rightSensor.position.x = camera.position.x + 0.5;
+rightSensor.position.z = camera.position.z;
+rightSensor.position.y = camera.position.y;
+
+frontSensor.position.x = camera.position.x;
+frontSensor.position.z = camera.position.z + .5;
+frontSensor.position.y = camera.position.y;
+
+backSensor.position.x = camera.position.x;
+backSensor.position.z = camera.position.z - .5;
+backSensor.position.y = camera.position.y;
+
+bottomSensor.position.x = camera.position.x;
+bottomSensor.position.z = camera.position.z;
+bottomSensor.position.y = camera.position.y - .5;
+} else {
+leftSensor.position.set(planeCore.position.x - 2, planeCore.position.y, planeCore.position.z);
+rightSensor.position.set(planeCore.position.x + 2, planeCore.position.y, planeCore.position.z);
+frontSensor.position.set(planeCore.position.x, planeCore.position.y, planeCore.position.z + 2);
+backSensor.position.set(planeCore.position.x, planeCore.position.y, planeCore.position.z - 2);
+bottomSensor.position.set(planeCore.position.x, planeCore.position.y - 1, planeCore.position.z);
+}
+}
+
+function sense() {
+if (!inPlane) {
+if (collidePlatforms(leftSensor)) {camera.position.x += .2;}
+if (collidePlatforms(rightSensor)) {camera.position.x -= .2;}
+if (collidePlatforms(frontSensor)) {camera.position.z -= .2;}
+if (collidePlatforms(backSensor)) {camera.position.z += .2;}
+} else {
+if (collide(leftSensor, base2) || collide(leftSensor, floor1) || collide(leftSensor, ceiling1)) {camera.position.x += .3;}
+if (collide(rightSensor, base2) || collide(rightSensor, floor1) || collide(rightSensor, ceiling1)) {camera.position.x -= .3;}
+if (collide(frontSensor, base2) || collide(frontSensor, floor1) || collide(frontSensor, ceiling1)) {camera.position.z -= .3;}
+if (collide(backSensor, base2) || collide(backSensor, floor1) || collide(backSensor, ceiling1)) {camera.position.z += .3;}
+if (collide(bottomSensor, base2) || collide(bottomSensor, floor1) || collide(bottomSensor, ceiling1)) {camera.position.y += .4;}
+}
+}
+
+function collidePlatforms(mesh) {
+for (var i = 0; i < platforms.length; i++) {
+if (collide(mesh, platforms[i])) {
+return true;
+}
+}
+return false;
+}
+
+
+function interact() {
+if (distance(camera, door1) < 1.9 && dialogShowTime < 2) {door1.position.y += 1.9; enemy1.position.y = 0; enemy1.position.z = -3;}
+if (distance(camera, door2) < 1.9 && enemy1Health <= 0) {
+door2.position.y += 1.9; gun = 'machineGun'; dialogShowTime = 100; dialogText = 'Machine gun acquired!';
+enemy1.position.set(-9, 0, -11); enemy1Health = maxHealth; enemy2.position.set(-8, 0, -13); enemy3.position.set(-6, 0, -14);
+}
+if (distance(camera, door3) < 1.9 && enemy1Health <= 0 && enemy2Health <= 0 && enemy3Health <= 0) {door3.position.y += 1.9; enemy4.position.set(-15.5, 0, -9);}
+if (distance(camera, door4) < 1.9 && enemy4Health <= 0) {
+door4.position.y += 1.9; enemy1.position.set(-9, 0, -2.5); enemy1Health = maxHealth; enemy2.position.set(-13, 0, -4); enemy2Health = maxHealth;
+enemy4.position.set(-13, 0, -5); enemy4Health = 30;
+}
+if (distance(camera, door5) < 1.9 && enemy4Health <= 0 && enemy1Health <= 0 && enemy2Health <= 0) {door5.position.y += 1.9;}
+if (distance(camera, planeCore) < 4 && dialogShowTime < 2) {inPlane = true; controls.unlock(); gun = 'none'; enemy1Health = maxHealth; enemy1.position.set(0, 3, 100);
+enemy2Health = maxHealth; enemy2.position.set(5, 3, 103); enemy3Health = maxHealth; enemy3.position.set(-5, 3, 100); dialogShowTime = 250;
+dialogText = 'Shoot the blue power cores to destroy the base.';
+}
+}
+
+function showInteract() {
+if (distance(camera, door1) < 1.9 && dialogShowTime < 2) {dialogText = 'E to open door'; dialogShowTime = 1;}
+if (distance(camera, door2) < 1.9 && enemy1Health <= 0) {dialogText = 'E to open door'; dialogShowTime = 1;}
+if (distance(camera, door3) < 1.9 && enemy1Health <= 0 && enemy2Health <= 0 && enemy3Health <= 0) {dialogText = 'E to open door'; dialogShowTime = 1;}
+if (distance(camera, door4) < 1.9 && enemy4Health <= 0) {dialogText = 'E to open door'; dialogShowTime = 1;}
+if (distance(camera, door5) < 1.9 && enemy4Health <= 0 && enemy1Health <= 0 && enemy2Health <= 0) {dialogText = 'E to open door'; dialogShowTime = 1;}
+if (distance(camera, planeCore) < 4 && dialogShowTime < 2) {dialogText = 'E to fly plane'; dialogShowTime = 1;}
+}
+
+function handleDialog() {
+if (dialogShowTime > 0) {
+dialogShowTime -= 1;
+document.getElementById('dialog').innerHTML = dialogText;
+} else {
+document.getElementById('dialog').innerHTML = '';
+}
+}
+
+function enemyDie() {
+if (enemy1Health <= 0) {enemy1.position.y = -10000; enemy1Bullet.position.y = -1000;}
+if (enemy2Health <= 0) {enemy2.position.y = -10000; enemy2Bullet.position.y = -1000;}
+if (enemy3Health <= 0) {enemy3.position.y = -10000; enemy3Bullet.position.y = -1000;}
+if (enemy4Health <= 0) {enemy4.position.y = -10000;}
+}
+
+function enemyShoot() {
+if (distance(enemy1Bullet, enemy1) > 10) {
+enemy1Bullet.position.set(enemy1.position.x, enemy1.position.y + 0.2, enemy1.position.z);
+enemy1Bullet.rotation.y = enemy1.rotation.y;
+} else {
+if (collidePlatforms(enemy1Bullet)) {enemy1Bullet.position.y = -10000;}
+if (collide(enemy1Bullet, cameraHitbox)) {enemy1Bullet.position.y = -10000; playerHealth -= 10;}
+if (collide(enemy1Bullet, planeCore)) {enemy1Bullet.position.y = -10000; playerHealth -= 5;}
+forward(enemy1Bullet, 0.1);
+}
+
+if (distance(enemy2Bullet, enemy2) > 10) {
+enemy2Bullet.position.set(enemy2.position.x, enemy2.position.y + 0.2, enemy2.position.z);
+enemy2Bullet.rotation.y = enemy2.rotation.y;
+} else {
+if (collidePlatforms(enemy2Bullet)) {enemy2Bullet.position.y = -10000;}
+if (collide(enemy2Bullet, cameraHitbox)) {enemy2Bullet.position.y = -10000; playerHealth -= 10;}
+if (collide(enemy2Bullet, planeCore)) {enemy2Bullet.position.y = -10000; playerHealth -= 5;}
+forward(enemy2Bullet, 0.1);
+}
+
+if (distance(enemy3Bullet, enemy3) > 10) {
+enemy3Bullet.position.set(enemy3.position.x, enemy3.position.y + 0.2, enemy3.position.z);
+enemy3Bullet.rotation.y = enemy3.rotation.y;
+} else {
+if (collidePlatforms(enemy3Bullet)) {enemy3Bullet.position.y = -10000;}
+if (collide(enemy3Bullet, cameraHitbox)) {enemy3Bullet.position.y = -10000; playerHealth -= 10;}
+if (collide(enemy3Bullet, planeCore)) {enemy3Bullet.position.y = -10000; playerHealth -= 5;}
+forward(enemy3Bullet, 0.1);
+}
+}
+
+function enemyMove() {
+if (distance(camera, enemy1) > 5 && Math.random() * 10 < 4) {moveTowards(enemy1, camera, enemy1HitBox);}
+if (distance(camera, enemy2) > 5 && Math.random() * 10 < 7) {moveTowards(enemy2, camera, enemy2HitBox);}
+if (distance(camera, enemy3) > 5 && Math.random() * 10 < 1) {moveTowards(enemy3, camera, enemy3HitBox);}
+if (distance(camera, enemy4) > 1.5) {moveTowards(enemy4, camera, enemy4HitBox);}
+if (inPlane) {
+if (enemy1.position.x > 15) {enemy1.position.x -= 0.03;}
+if (enemy1.position.x < -15) {enemy1.position.x += 0.03;}
+if (enemy1.position.z > 115) {enemy1.position.z -= 0.03;}
+if (enemy1.position.z < 85) {enemy1.position.z += 0.03;}
+
+if (enemy2.position.x > 15) {enemy2.position.x -= 0.03;}
+if (enemy2.position.x < -15) {enemy2.position.x += 0.03;}
+if (enemy2.position.z > 115) {enemy2.position.z -= 0.03;}
+if (enemy2.position.z < 85) {enemy2.position.z += 0.03;}
+
+if (enemy3.position.x > 15) {enemy3.position.x -= 0.03;}
+if (enemy3.position.x < -15) {enemy3.position.x += 0.03;}
+if (enemy3.position.z > 115) {enemy3.position.z -= 0.03;}
+if (enemy3.position.z < 85) {enemy3.position.z += 0.03;}
+}
+}
+
+function moveTowards(mesh, meshDestination, hitBox) {
+if (mesh.position.x > meshDestination.position.x) {
+mesh.position.x -= .03;
+if (collidePlatforms(hitBox)) {mesh.position.x += 0.9;}
+} else {
+mesh.position.x += .03;
+if (collidePlatforms(hitBox)) {mesh.position.x -= 0.9;}
+}
+if (mesh.position.z > meshDestination.position.z) {
+mesh.position.z -= .03;
+if (collidePlatforms(hitBox)) {mesh.position.z += 0.9;}
+} else {
+mesh.position.z += .03;
+if (collidePlatforms(hitBox)) {mesh.position.z -= 0.9;}
+}
+}
+
+var lightSwordHitting = 0;
+function handleLightSword() {
+lightSwordCarry.position.set(enemy4.position.x, enemy4.position.y + 0.5, enemy4.position.z);
+lightSwordCarry.rotation.y = enemy4.rotation.y - 0.7;
+lightSwordCarry.rotation.x = -0.2;
+forward(lightSwordCarry, 0.55);
+if (distance(camera, enemy4) <= 1.5 && lightSwordHitting <= 0) {
+lightSwordHitting = 200;
+}
+if (lightSwordHitting > 100) {
+lightSwordCarry.visible = false;
+lightSwordHit.position.set(enemy4.position.x, enemy4.position.y, enemy4.position.z);
+lightSwordHit.rotation.y = enemy4.rotation.y - 0.2;
+forward(lightSwordHit, 1);
+if (collide(lightSwordHit, cameraHitbox)) {playerHealth -= 0.25;}
+} else {
+lightSwordCarry.visible = true;
+lightSwordHit.position.y = -1000;
+}
+if (lightSwordHitting > 0) {lightSwordHitting -= 1;}
+}
+
+function showHealth() {
+var healthToShow = playerHealth / 100 * 30;
+document.getElementById('health').style.width = healthToShow.toString() + '%';
+document.getElementById('health').innerHTML = 'HEALTH:' + Math.ceil(playerHealth).toString();
+}
+
+function controlPlane() {
+if (inPlane) {
+planeCore.position.set(camera.position.x, camera.position.y - 3, camera.position.z);
+camera.rotation.set(planeCore.rotation.x, planeCore.rotation.y, planeCore.rotation.z);
+forward(planeCore, 8);
+planeWings.position.set(planeCore.position.x, planeCore.position.y, planeCore.position.z);
+planeWings.rotation.y = planeCore.rotation.y;
+driverArea.position.set(planeCore.position.x, planeCore.position.y + 0.5, planeCore.position.z);
+driverArea.rotation.y = planeCore.rotation.y;
+if (aDown) {planeCore.rotation.y += 0.05;}
+if (dDown) {planeCore.rotation.y -= 0.05;}
+if (wDown) {camera.position.y += 0.4;}
+if (sDown) {camera.position.y -= 0.4;}
+controls.moveForward(0.3);
+if (collide(planeCore, enemy1HitBox) || collide(planeMissile, enemy1HitBox)) {enemy1Health = 0; hitMarkerShow = 10;}
+if (collide(planeCore, enemy2HitBox) || collide(planeMissile, enemy2HitBox)) {enemy2Health = 0; hitMarkerShow = 10;}
+if (collide(planeCore, enemy3HitBox) || collide(planeMissile, enemy3HitBox)) {enemy3Health = 0; hitMarkerShow = 10;}
+if (collide(planeCore, powerCore1) || collide(planeCore, powerCore2)) {playerHealth -= 1;}
+}
+}
+
+var planeShooting = 10000;
+function planeShoot() {
+if (planeShooting == 0) {
+planeMissile.position.set(planeCore.position.x, planeCore.position.y, planeCore.position.z);
+planeMissile.rotation.y = planeCore.rotation.y;
+planeShooting += 1;
+planeMissile.visible = true;
+}
+if (planeShooting <= 75 && planeShooting > 0) {
+forward(planeMissile, 1);
+planeShooting += 1;
+}
+if (planeShooting > 75) {
+planeMissile.visible = false;
+}
+}
+
+function handlePowerCores() {
+if (collide(planeMissile, powerCore1)) {powerCoreHealth.one -= 1; planeMissile.position.y = -10000; hitMarkerShow = 10;}
+if (collide(planeMissile, powerCore2)) {powerCoreHealth.two -= 1; planeMissile.position.y = -10000; hitMarkerShow = 10;}
+if (powerCoreHealth.one <= 0) {powerCore1.position.y = -10000;}
+if (powerCoreHealth.two <= 0) {powerCore2.position.y = -10000;}
+if (powerCoreHealth.one <= 0 && powerCoreHealth.two <= 0) {
+bigExplosion.position.set(0, 0, 100);
+if (distance(bigExplosion, planeCore) < 41) {controls.moveForward(-40);}
+dialogShowTime = 10;
+dialogText = 'Base destroyed!';
+setTimeout(end, 2000);
+}
+}
+
+function end() {
+window.location.href = "ending.htm";
+gameEnded = true;
+}
+
+function playerDie() {
+if (playerHealth <= 0) {
+window.location.href = "dead.htm";
+gameEnded = true;
+}
+}
+
+// window resizing code. Sneakily stolen from Lennon
+window.onresize = function() {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+}
+
+</script>
+</body>
+</html>
