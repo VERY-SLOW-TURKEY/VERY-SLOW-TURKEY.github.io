@@ -1,0 +1,353 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>jumpy</title>
+</head>
+<body>
+<script>
+
+var canvas = document.createElement('canvas');
+var WIDTH = 800;
+var HEIGHT = 600;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+var c = canvas.getContext('2d');
+window.addEventListener('load', start);
+window.addEventListener('keydown', keyDown);
+window.addEventListener('keyup', keyUp);
+
+function start() {
+window.requestAnimationFrame(gameLoop);
+}
+// actual game
+
+// objects
+var platform1 = {x:10, y:200, width:100, height:30, color:'purple'};
+var platform2 = {x:40, y:100, width:100, height:30, color:'purple'};
+var platform3 = {x:40, y:100, width:100, height:30, color:'purple'};
+var platform4 = {x:40, y:100, width:100, height:30, color:'purple'};
+var platform5 = {x:40, y:100, width:100, height:30, color:'purple'};
+var platform6 = {x:40, y:100, width:100, height:30, color:'purple'};
+var spawn = {x:40, y:100, width:50, height:50, color:'DeepPink'};
+var portal = {x:40, y:100, width:50, height:100, color:'MediumPurple'};
+var player = {x:55, y:450, width:40, height:40, color:'green', dire:'r'};
+var bottomSensor = {x:0, y:0, width:player.width - 8, height:0};
+var leftSensor = {x:0, y:0, width:0, height:player.height - 5};
+var rightSensor = {x:0, y:0, width:1, height:player.height - 5};
+var topSensor = {x:0, y:0, width:player.width, height:0};
+var bulletPickup = {x:0, y:1000, width:15, height:15, color:'grey'};
+var bullet = {x:0, y:1000, width:15, height:15, color:'grey'};
+var enemy = {x:0, y:1000, width:40, height:40, color:'red'};
+// variables
+var platforms = [platform1, platform2, platform3, platform4, platform5, platform6];
+var arrowUp = false;
+var arrowDown = false;
+var arrowLeft = false;
+var arrowRight = false;
+var onGround = false;
+var level = 1;
+var maxHealth = 10;
+var health = maxHealth;
+var healthWidth = 250;
+var ammo = 10;
+
+function gameLoop() {
+window.requestAnimationFrame(gameLoop);
+draw();
+move();
+moveSensors();
+jump();
+fall();
+drawLevel();
+fallToDoom();
+nextLevel();
+bulletPickupHandling();
+shoot();
+bulletBounce();
+enemyHit();
+}
+
+function draw() {
+c.clearRect(0, 0, WIDTH, HEIGHT);
+//c.fillStyle = player.color;
+//c.fillRect(player.x, player.y, player.width, player.height);
+//c.fillStyle = 'blue';
+//c.fillRect(platform1.x, platform1.y, platform1.width, platform1.height);
+create(spawn);
+create(player);
+createPlatforms();
+create(portal);
+create(bulletPickup);
+// draw health bar
+c.fillStyle = 'black';
+c.fillRect(WIDTH - healthWidth, 10, healthWidth, 20);
+c.fillStyle = 'red';
+c.fillRect(WIDTH - healthWidth, 10, health / maxHealth * healthWidth, 20);
+create(bullet);
+create(enemy);
+c.fillStyle = 'black';
+c.font = '60px san-serif';
+c.fillText(ammo, 0, 45);
+}
+
+function collide(object1, object2) {
+if (object1.y + object1.height >= object2.y && object1.y <= object2.y + object2.height && object1.x + object1.width >= object2.x && object1.x <= object2.x + object2.width) {
+return true;
+} else {
+return false;
+}
+}
+
+function touchingPlatforms(object) {
+var touching = false;
+for (var i = 0; i <= platforms.length - 1; i++) {
+if (collide(object, platforms[i])) {
+touching = true;
+}
+}
+return touching;
+}
+
+function create(object) {
+c.fillStyle = object.color;
+c.fillRect(object.x, object.y, object.width, object.height);
+}
+
+function createPlatforms() {
+for (var i = 0; i < platforms.length; i++) {
+create(platforms[i]);
+}
+}
+
+function keyDown(event) {
+if (event.key === 'ArrowUp') {
+arrowUp = true;
+}
+if (event.key === 'ArrowDown') {
+arrowDown = true;
+}
+if (event.key === 'ArrowLeft') {
+arrowLeft = true;
+}
+if (event.key === 'ArrowRight') {
+arrowRight = true;
+}
+}
+
+function keyUp(event) {
+if (event.key === 'ArrowUp') {
+arrowUp = false;
+}
+if (event.key === 'ArrowDown') {
+arrowDown = false;
+}
+if (event.key === 'ArrowLeft') {
+arrowLeft = false;
+}
+if (event.key === 'ArrowRight') {
+arrowRight = false;
+}
+}
+
+function move() {
+if (arrowRight && canGoRight()) {
+player.x += 3;
+player.dire = 'r';
+}
+if (arrowLeft && canGoLeft()) {
+player.x -= 3;
+player.dire = 'l';
+}
+}
+
+function moveSensors() {
+bottomSensor.y = player.y + player.height;
+bottomSensor.x = player.x + 4;
+
+leftSensor.y = player.y;
+leftSensor.x = player.x;
+
+rightSensor.y = player.y;
+rightSensor.x = player.x + player.width;
+
+topSensor.y = player.y;
+topSensor.x = player.x;
+}
+
+var jumping = 0;
+function jump() {
+if (touchingPlatforms(bottomSensor)) {
+onGround = true;
+} else {
+onGround = false;
+}
+if (onGround && arrowUp) {
+jumping = 20;
+}
+if (jumping > 0) {
+jumping -= 1;
+player.y -= 11;
+}
+}
+
+function fall() {
+if (!onGround) {
+player.y += 4;
+}
+if (touchingPlatforms(topSensor)) {
+jumping = 0;
+}
+}
+
+function canGoLeft() {
+if (touchingPlatforms(leftSensor)) {
+return false;
+} else {
+return true;
+}
+}
+
+function canGoRight() {
+if (touchingPlatforms(rightSensor)) {
+return false;
+} else {
+return true;
+}
+}
+
+function drawLevel() {
+if (level === 1) {
+platform1.x = 30;
+platform1.y = 500;
+platform2.x = 240;
+platform2.y = 450;
+platform3.x = 400;
+platform3.y = 380;
+platform4.x = 270;
+platform4.y = 260;
+platform5.x = 180;
+platform5.y = 190;
+platform6.x = 350;
+platform6.y = 90;
+spawn.x = 55;
+spawn.y = 450;
+portal.x = 365;
+portal.y = -10;
+}
+}
+
+function fallToDoom() {
+if (player.y > HEIGHT + 20) {
+health -= 1;
+player.x = spawn.x;
+player.y = spawn.y;
+}
+}
+
+function nextLevel() {
+if (collide(player, portal)) {
+level ++;
+if (level === 2) {
+player.x = 60;
+player.y = 400;
+spawn.x = 60;
+spawn.y = 400;
+platform1.x = 45;
+platform1.y = 450;
+platform2.x = 150;
+platform2.y = 380;
+platform3.x = 400;
+platform3.y = 310;
+platform4.x = 0;
+platform4.y = 1000;
+platform5.x = 0;
+platform5.y = 1000;
+platform6.x = 0;
+platform6.y = 1000;
+enemy.x = 450;
+enemy.y = 270;
+}
+}
+}
+
+function cmd(command) {
+if (command === 'finnish') {
+player.x = portal.x;
+player.y = portal.y;
+}
+}
+
+var bulletColorChange = 0;
+function bulletPickupHandling() {
+if (bulletColorChange === 0) {
+bulletColorChange = 10;
+if (bulletPickup.color === 'grey') {
+bulletPickup.color = 'lightGrey';
+} else {
+bulletPickup.color = 'grey';
+}
+} else {
+bulletColorChange -= 1;
+}
+if (collide(player, bulletPickup)) {
+bulletPickup.x = 0;
+bulletPickup.y = 1000;
+ammo += 5;
+}
+}
+
+var canShoot = true;
+var shooting = 0;
+var copyPlayerDir = '';
+function shoot() {
+if (arrowDown && ammo > 0 && canShoot) {
+ammo -= 1;
+console.log('pew!');
+copyPlayerDir = player.dire;
+shooting = 80;
+bullet.x = player.x;
+bullet.y = player.y;
+}
+if (shooting > 0) {
+if (copyPlayerDir === 'r') {
+bullet.x += 6;
+shooting -= 1;
+} else {
+bullet.x -= 6;
+shooting -= 1;
+}
+}
+if (shooting === 0) {
+canShoot = true;
+bullet.x = 0;
+bullet.y = 1000;
+} else {
+canShoot = false;
+}
+}
+
+function bulletBounce() {
+if (touchingPlatforms(bullet) || bullet.x < 0 || bullet.x + bullet.width > WIDTH) {
+if (copyPlayerDir === 'r') {
+copyPlayerDir = 'l';
+} else {
+copyPlayerDir = 'r';
+}
+} 
+}
+
+function enemyHit() {
+if (collide(enemy, bullet)) {
+bulletPickup.x = enemy.x;
+bulletPickup.y = enemy.y;
+shooting = 0;
+enemy.x = 1000;
+enemy.y = 1000;
+}
+}
+
+document.body.appendChild(canvas);
+
+</script>
+</body>
+</html>

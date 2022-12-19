@@ -1,0 +1,579 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>2 Player Battles</title>
+</head>
+<body>
+<script>
+var canvas = document.createElement('canvas');
+var HEIGHT = 600;
+var WIDTH = 800;
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+var c = canvas.getContext('2d');
+window.addEventListener('load', start);
+window.addEventListener('keydown', keyDown);
+window.addEventListener('keyup', keyUp)
+function start() {
+window.requestAnimationFrame(gameLoop);
+}
+
+// variables
+var p1LevelX = 0;
+var p1LevelY = 0;
+var p2LevelX = 0;
+var p2LevelY = 0;
+var arrowUp = false;
+var arrowDown = false;
+var arrowLeft = false;
+var arrowRight = false;
+var a = false;
+var d = false;
+var w = false;
+var s = false;
+var p1Shooting = 0;
+var copyP1Dire = '';
+var bulletSpeed = 5;
+var p2Shooting = 0;
+var copyP2Dire = '';
+var p1MaxHealth = 5;
+var p1Health = p1MaxHealth;
+var p2MaxHealth = 5;
+var p2Health = p2MaxHealth;
+var healthBarWidth = 200;
+// objects
+var p1 = {x:WIDTH / 4, y:HEIGHT / 2, width:30, height:30, color:'#347C17', dire:'u', touchingLeft:false, touchingRight:false, touchingUp:false, touchingDown:false};
+var p1Left = {x:0, y:0, width:0, height:p1.height};
+var p1Right = {x:0, y:0, width:0, height:p1.height};
+var p1Up = {x:0, y:0, width:p1.width, height:0};
+var p1Down = {x:0, y:0, width:p1.width, height:0};
+var p2 = {x:WIDTH / 2 * 1.5, y:HEIGHT / 2, width:30, height:30, color:'#EE9A4D', dire:'u', touchingLeft:false, touchingRight:false, touchingUp:false, touchingDown:false};
+var p2Left = {x:0, y:0, width:0, height:p1.height};
+var p2Right = {x:0, y:0, width:0, height:p1.height};
+var p2Up = {x:0, y:0, width:p1.width, height:0};
+var p2Down = {x:0, y:0, width:p1.width, height:0};
+var p2Copy = {x:WIDTH / 4, y:HEIGHT / 2, width:30, height:30, color:'#EE9A4D'};
+var p1Copy = {x:WIDTH / 2 * 1.5, y:HEIGHT / 2, width:30, height:30, color:'#347C17'};
+var dividingWall = {x:WIDTH / 2 - 50, y:0, width:100, height:HEIGHT, color:'black'};
+var p1Bullet = {x:10000, y:10000, width:15, height:15, color:'gold'};
+var p1BulletCopy = {x:10000, y:10000, width:15, height:15, color:'gold'};
+var p2Bullet = {x:10000, y:10000, width:15, height:15, color:'gold'};
+var p2BulletCopy = {x:10000, y:10000, width:15, height:15, color:'gold'};
+// p1 level
+var wall1 = {x:0, y:0, width:100, height:30, color:'grey'};
+var wall2 = {x:0, y:0, width:100, height:30, color:'grey'};
+var wall3 = {x:0, y:0, width:100, height:30, color:'grey'};
+var wall4 = {x:0, y:0, width:100, height:30, color:'grey'};
+var wall5 = {x:0, y:0, width:100, height:30, color:'grey'};
+var wall6 = {x:0, y:0, width:100, height:30, color:'grey'};
+var p1Level = [wall1, wall2, wall3, wall4, wall5, wall6];
+// p2 level
+var wall7 = {x:0, y:0, width:100, height:30, color:'grey'};
+var wall8 = {x:0, y:0, width:100, height:30, color:'grey'};
+var wall9 = {x:0, y:0, width:100, height:30, color:'grey'};
+var wall10 = {x:0, y:0, width:100, height:30, color:'grey'};
+var wall11 = {x:0, y:0, width:100, height:30, color:'grey'};
+var wall12 = {x:0, y:0, width:100, height:30, color:'grey'};
+var p2Level = [wall7, wall8, wall9, wall10, wall11, wall12];
+
+var startNum = -250;
+// staring code
+p1Copy.x += startNum;
+p2Copy.x -= startNum;
+p2LevelX += startNum;
+p1Copy.y += startNum;
+p2Copy.y -= startNum;
+p2LevelY += startNum;
+startNum = 250;
+p2Copy.x += startNum;
+p1Copy.x -= startNum;
+p1LevelX += startNum;
+p2Copy.y += startNum;
+p1Copy.y -= startNum;
+p1LevelY += startNum;
+
+function gameLoop() {
+window.requestAnimationFrame(gameLoop);
+if (winner() === 'no one') {
+p1MoveLevel();
+p2MoveLevel();
+draw();
+movePlayer1();
+movePlayer2();
+p1Shoot();
+p2Shoot();
+p1TouchingLevel();
+p2TouchingLevel();
+p1BulletCollisions();
+p2BulletCollisions();
+} else {
+if (winner() === 'p1') {
+c.fillStyle = 'green';
+c.font = '100px san-serif';
+c.textAlign = 'center';
+c.fillText('Player 1 Wins!', WIDTH / 2, HEIGHT / 2);
+} else {
+c.fillStyle = 'green';
+c.font = '100px san-serif';
+c.textAlign = 'center';
+c.fillText('Player 2 Wins!', WIDTH / 2, HEIGHT / 2);
+}
+}
+}
+
+function draw() {
+c.fillStyle = '#0020C2';
+c.fillRect(0, 0, WIDTH, HEIGHT);
+create(p1);
+create(p2);
+if (p2Copy.x < dividingWall.x) {
+create(p2Copy);
+}
+if (p1Copy.x + p1Copy.width > dividingWall.x + dividingWall.width) {
+create(p1Copy);
+}
+createP1Level();
+createP2Level();
+p1Create(p1Bullet);
+p2Create(p1BulletCopy);
+p2Create(p2Bullet);
+p1Create(p2BulletCopy);
+// draw health bars
+c.fillStyle = 'black';
+c.fillRect(10, 10, healthBarWidth, 20);
+c.fillRect(460, 10, healthBarWidth, 20);
+c.fillStyle = 'red';
+c.fillRect(10, 10, p1Health / p1MaxHealth * healthBarWidth, 20);
+c.fillRect(460, 10, p2Health / p2MaxHealth * healthBarWidth, 20);
+create(dividingWall);
+}
+
+function create(object) {
+c.fillStyle = object.color;
+c.fillRect(object.x, object.y, object.width, object.height);
+}
+
+function p1MoveLevel() {
+wall1.x = p1LevelX + 60;
+wall1.y = p1LevelY + 200;
+
+wall2.x = p1LevelX + 10;
+wall2.y = p1LevelY + 500;
+
+wall3.x = p1LevelX + 300;
+wall3.y = p1LevelY + 400;
+
+wall4.x = p1LevelX + 400;
+wall4.y = p1LevelY + 100;
+
+wall5.x = p1LevelX + 380;
+wall5.y = p1LevelY + 300;
+
+wall6.x = p1LevelX + 100;
+wall6.y = p1LevelY + 370;
+}
+
+function p2MoveLevel() {
+wall7.x = p2LevelX + 60 + 400;
+wall7.y = p2LevelY + 200;
+
+wall8.x = p2LevelX + 10 + 400;
+wall8.y = p2LevelY + 500;
+
+wall9.x = p2LevelX + 300 + 400;
+wall9.y = p2LevelY + 400;
+
+wall10.x = p2LevelX + 400 + 400;
+wall10.y = p2LevelY + 100;
+
+wall11.x = p2LevelX + 380 + 400;
+wall11.y = p2LevelY + 300;
+
+wall12.x = p2LevelX + 100 + 400;
+wall12.y = p2LevelY + 370;
+}
+
+function keyDown(event) {
+if (event.key === 'ArrowUp') {
+p2.dire = 'u';
+arrowUp = true;
+}
+if (event.key === 'ArrowDown') {
+p2.dire = 'd';
+arrowDown = true;
+}
+if (event.key === 'ArrowLeft') {
+p2.dire = 'l';
+arrowLeft = true;
+}
+if (event.key === 'ArrowRight') {
+p2.dire = 'r';
+arrowRight = true;
+}
+
+if (event.key === 'a') {
+p1.dire = 'l';
+a = true;
+}
+if (event.key === 'd') {
+p1.dire = 'r';
+d = true;
+}
+if (event.key === 'w') {
+p1.dire = 'u';
+w = true;
+}
+if (event.key === 's') {
+p1.dire = 'd';
+s = true;
+}
+
+if (event.key === 'f' && p1Shooting === 0) {
+copyP1Dire = p1.dire;
+p1Shooting = 50;
+p1Bullet.x = p1.x;
+p1Bullet.y = p1.y;
+p1BulletCopy.x = p1Copy.x;
+p1BulletCopy.y = p1Copy.y;
+}
+
+if (event.key === 'm' && p2Shooting === 0) {
+copyP2Dire = p2.dire;
+p2Shooting = 50;
+p2Bullet.x = p2.x;
+p2Bullet.y = p2.y;
+p2BulletCopy.x = p2Copy.x;
+p2BulletCopy.y = p2Copy.y;
+}
+}
+
+function keyUp(event) {
+if (event.key === 'ArrowUp') {
+arrowUp = false;
+}
+if (event.key === 'ArrowDown') {
+arrowDown = false;
+}
+if (event.key === 'ArrowLeft') {
+arrowLeft = false;
+}
+if (event.key === 'ArrowRight') {
+arrowRight = false;
+}
+
+if (event.key === 'a') {
+a = false;
+}
+if (event.key === 'd') {
+d = false;
+}
+if (event.key === 'w') {
+w = false;
+}
+if (event.key === 's') {
+s = false;
+}
+}
+
+function movePlayer1() {
+if (d && p1LevelX > -250 && !p1.touchingRight) {
+p2BulletCopy.x -= 3;
+p1Bullet.x -= 3;
+p1Copy.x += 3;
+p2Copy.x -= 3;
+p1LevelX -= 3;
+}
+if (a && p1LevelX < 250 && !p1.touchingLeft) {
+p2BulletCopy.x += 3;
+p1Bullet.x += 3;
+p1Copy.x -= 3;
+p2Copy.x += 3;
+p1LevelX += 3;
+}
+if (s && p1LevelY > -250 && !p1.touchingDown) {
+p2BulletCopy.y -= 3;
+p1Bullet.y -= 3;
+p1Copy.y += 3;
+p2Copy.y -= 3;
+p1LevelY -= 3;
+}
+if (w && p1LevelY < 250 && !p1.touchingUp) {
+p2BulletCopy.y += 3;
+p1Bullet.y += 3;
+p1Copy.y -= 3;
+p2Copy.y += 3;
+p1LevelY += 3;
+}
+}
+
+function movePlayer2() {
+if (arrowLeft && p2LevelX < 250 && !p2.touchingLeft) {
+p1BulletCopy.x += 3;
+p2Bullet.x += 3;
+p1Copy.x += 3;
+p2Copy.x -= 3;
+p2LevelX += 3;
+}
+if (arrowRight && p2LevelX > -250 && !p2.touchingRight) {
+p1BulletCopy.x -= 3;
+p2Bullet.x -= 3;
+p1Copy.x -= 3;
+p2Copy.x += 3;
+p2LevelX -= 3;
+}
+if (arrowDown && p2LevelY > -250 && !p2.touchingDown) {
+p1BulletCopy.y -= 3;
+p2Bullet.y -= 3;
+p1Copy.y -= 3;
+p2Copy.y += 3;
+p2LevelY -= 3;
+}
+if (arrowUp && p2LevelY < 250 && !p2.touchingUp) {
+p1BulletCopy.y += 3;
+p2Bullet.y += 3;
+p1Copy.y += 3;
+p2Copy.y -= 3;
+p2LevelY += 3;
+}
+}
+
+function moveP2Copy() {
+p2Copy.x = (p1LevelX + p2LevelX) + WIDTH / 4;
+p2Copy.y = (p1LevelY - p2LevelY) + HEIGHT / 2;
+}
+
+function moveP1Copy() {
+p1Copy.x = (p1LevelX - p2LevelX) + WIDTH / 2 * 1.5;
+p1Copy.y = (p1LevelY + p2LevelY) + HEIGHT / 2;
+}
+
+function createP1Level() {
+for (var i = 0; i < p1Level.length; i ++) {
+if (p1Level[i].x < dividingWall.x) {
+create(p1Level[i]);
+}
+}
+}
+
+function createP2Level() {
+for (var i = 0; i < p2Level.length; i ++) {
+if (p2Level[i].x + p2Level[i].width > dividingWall.x + dividingWall.width) {
+create(p2Level[i]);
+}
+}
+}
+
+function p1Shoot() {
+if (p1Shooting > 0) {
+if (copyP1Dire === 'r') {
+p1Bullet.x += bulletSpeed;
+p1BulletCopy.x += bulletSpeed;
+p1Shooting -= 1;
+}
+if (copyP1Dire === 'l') {
+p1Bullet.x -= bulletSpeed;
+p1BulletCopy.x -= bulletSpeed;
+p1Shooting -= 1;
+}
+if (copyP1Dire === 'u') {
+p1Bullet.y -= bulletSpeed;
+p1BulletCopy.y -= bulletSpeed;
+p1Shooting -= 1;
+}
+if (copyP1Dire === 'd') {
+p1BulletCopy.y += bulletSpeed;
+p1Bullet.y += bulletSpeed;
+p1Shooting -= 1;
+}
+} else {
+p1Bullet.x = 100000;
+p1Bullet.y = 100000;
+p1BulletCopy.x = 100000;
+p1BulletCopy.y = 100000;
+}
+}
+
+function p2Shoot() {
+if (p2Shooting > 0) {
+if (copyP2Dire === 'r') {
+p2Bullet.x += bulletSpeed;
+p2BulletCopy.x += bulletSpeed;
+p2Shooting -= 1;
+}
+if (copyP2Dire === 'l') {
+p2Bullet.x -= bulletSpeed;
+p2BulletCopy.x -= bulletSpeed;
+p2Shooting -= 1;
+}
+if (copyP2Dire === 'u') {
+p2Bullet.y -= bulletSpeed;
+p2BulletCopy.y -= bulletSpeed;
+p2Shooting -= 1;
+}
+if (copyP2Dire === 'd') {
+p2BulletCopy.y += bulletSpeed;
+p2Bullet.y += bulletSpeed;
+p2Shooting -= 1;
+}
+} else {
+p2Bullet.x = 100000;
+p2Bullet.y = 100000;
+p2BulletCopy.x = 100000;
+p2BulletCopy.y = 100000;
+}
+}
+
+function p2Create(object) {
+if (object.x + object.width > dividingWall.x + dividingWall.width) {
+c.fillStyle = object.color;
+c.fillRect(object.x, object.y, object.width, object.height);
+}
+}
+
+function p1Create(object) {
+if (object.x < dividingWall.x) {
+c.fillStyle = object.color;
+c.fillRect(object.x, object.y, object.width, object.height);
+}
+}
+
+function collide(object1, object2) {
+if (object1.y + object1.height >= object2.y && object1.y <= object2.y + object2.height && object1.x + object1.width >= object2.x && object1.x <= object2.x + object2.width) {
+return true;
+} else {
+return false;
+}
+}
+
+function p1TouchingLevel() {
+var left = false;
+var right = false;
+var up = false;
+var down = false;
+p1Left.x = p1.x - 5;
+p1Left.y = p1.y;
+p1Right.x = p1.x + p1.width + 5;
+p1Right.y = p1.y;
+p1Up.x = p1.x;
+p1Up.y = p1.y - 5;
+p1Down.x = p1.x;
+p1Down.y = p1.y + p1.height + 5;
+for (var i = 0; i < p1Level.length; i ++) {
+if (collide(p1Left, p1Level[i])) {
+p1.touchingLeft = true;
+left = true;
+}
+if (collide(p1Right, p1Level[i])) {
+p1.touchingRight = true;
+right = true;
+}
+if (collide(p1Up, p1Level[i])) {
+p1.touchingUp = true;
+up = true;
+}
+if (collide(p1Down, p1Level[i])) {
+p1.touchingDown = true;
+down = true;
+}
+}
+if (!left) {
+p1.touchingLeft = false;
+}
+if (!right) {
+p1.touchingRight = false;
+}
+if (!up) {
+p1.touchingUp = false;
+}
+if (!down) {
+p1.touchingDown = false;
+}
+}
+
+function p2TouchingLevel() {
+var left = false;
+var right = false;
+var up = false;
+var down = false;
+p2Left.x = p2.x - 5;
+p2Left.y = p2.y;
+p2Right.x = p2.x + p2.width + 5;
+p2Right.y = p2.y;
+p2Up.x = p2.x;
+p2Up.y = p2.y - 5;
+p2Down.x = p2.x;
+p2Down.y = p2.y + p2.height + 5;
+for (var i = 0; i < p2Level.length; i ++) {
+if (collide(p2Left, p2Level[i])) {
+p2.touchingLeft = true;
+left = true;
+}
+if (collide(p2Right, p2Level[i])) {
+p2.touchingRight = true;
+right = true;
+}
+if (collide(p2Up, p2Level[i])) {
+p2.touchingUp = true;
+up = true;
+}
+if (collide(p2Down, p2Level[i])) {
+p2.touchingDown = true;
+down = true;
+}
+}
+if (!left) {
+p2.touchingLeft = false;
+}
+if (!right) {
+p2.touchingRight = false;
+}
+if (!up) {
+p2.touchingUp = false;
+}
+if (!down) {
+p2.touchingDown = false;
+}
+}
+
+function p1BulletCollisions() {
+for (var i = 0; i < p1Level.length; i ++) {
+if (collide(p1Bullet, p1Level[i])) {
+p1Shooting = 0;
+}
+}
+if (collide(p1Bullet, p2Copy)) {
+p1Shooting = 0;
+p2Health -= 1;
+}
+}
+
+function p2BulletCollisions() {
+for (var i = 0; i < p2Level.length; i ++) {
+if (collide(p2Bullet, p2Level[i])) {
+p2Shooting = 0;
+}
+}
+if (collide(p2Bullet, p1Copy)) {
+p2Shooting = 0;
+p1Health -= 1;
+}
+}
+
+function winner() {
+var winnerIs = '';
+if (p1Health <= 0) {
+winnerIs = 'p2';
+} else {
+if (p2Health <= 0) {
+winnerIs = 'p1';
+} else {
+winnerIs = 'no one';
+}
+}
+return winnerIs;
+}
+
+document.body.appendChild(canvas);
+</script>
+</body>
+</html>

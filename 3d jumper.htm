@@ -1,0 +1,433 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>jumper</title>
+<style>
+body { margin: 0; }
+</style>
+</head>
+<body>
+<script src="three.js"></script>
+<script src="PointerLockControls.js"></script>
+<script>
+window.addEventListener('keydown', keyDown);
+window.addEventListener('keyup', keyUp);
+window.addEventListener('mousemove', mouseMove);
+
+var dDown = false;
+var aDown = false;
+var wDown = false;
+var sDown = false;
+var spaceDown = false;
+var onGround = true;
+jumping = 0;
+gravityMultiplier = 1;
+var lookStart = false;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+var controls = new THREE.PointerLockControls(camera, document.body);
+
+const light = new THREE.DirectionalLight();
+light.position.set( 0.5, 5, 1 );
+light.castShadow = true;
+scene.add( light );
+
+const rightGeo = new THREE.BoxGeometry(0, .5, .5);
+const frontGeo = new THREE.BoxGeometry(.5, .5, 0);
+const topGeo = new THREE.BoxGeometry(.6, 0, .6);
+const greenMat = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+const leftSensor = new THREE.Mesh( rightGeo, greenMat );
+const rightSensor = new THREE.Mesh( rightGeo, greenMat );
+const frontSensor = new THREE.Mesh( frontGeo, greenMat );
+const backSensor = new THREE.Mesh( frontGeo, greenMat );
+const bottomSensor = new THREE.Mesh( topGeo, greenMat );
+scene.add(leftSensor);
+scene.add(rightSensor);
+scene.add(frontSensor);
+scene.add(backSensor);
+scene.add(bottomSensor);
+leftSensor.visible = false;
+rightSensor.visible = false;
+frontSensor.visible = false;
+backSensor.visible = false;
+bottomSensor.visible = false;
+
+const bigGeo = new THREE.BoxGeometry(2, 1, 2);
+const recGeo = new THREE.BoxGeometry(2, 1, 1);
+const whiteMat = new THREE.MeshBasicMaterial( { color: 0xffffff } );
+const plat1 = new THREE.Mesh( recGeo, whiteMat );
+plat1.castShadow = true;
+plat1.receiveShadow = true;
+scene.add(plat1);
+const cubeGeo = new THREE.BoxGeometry(1, 1, 1);
+const plat2 = new THREE.Mesh( bigGeo, whiteMat );
+plat2.castShadow = true;
+plat2.receiveShadow = true;
+scene.add(plat2);
+plat2.position.y = -1;
+plat2.position.z = 5;
+
+const bigCircleGeo = new THREE.CylinderGeometry(.5, .5, 1, 32);
+const purpleMat = new THREE.MeshBasicMaterial({color:0xff00ff});
+const spawnPoint = new THREE.Mesh(bigCircleGeo, purpleMat);
+scene.add(spawnPoint);
+spawnPoint.position.z = 5;
+spawnPoint.position.y = -.9;
+const tealMat = new THREE.MeshBasicMaterial({color:0x00ffff});
+const checkPoint = new THREE.Mesh(bigCircleGeo, tealMat);
+scene.add(checkPoint);
+checkPoint.position.set(5, 1.1, -21);
+
+const plat3 = new THREE.Mesh(cubeGeo, whiteMat);
+plat3.castShadow = true;
+plat3.receiveShadow = true;
+scene.add(plat3);
+plat3.position.set(1, 0, -5);
+
+const plat4 = new THREE.Mesh(bigGeo, whiteMat);
+plat4.castShadow = true;
+plat4.receiveShadow = true;
+scene.add(plat4);
+plat4.position.set(5, 1, -8);
+
+const movingPlat = new THREE.Mesh(cubeGeo, whiteMat);
+scene.add(movingPlat);
+movingPlat.position.set(5, 1, -11);
+
+const plat5 = new THREE.Mesh(bigGeo, whiteMat);
+scene.add(plat5);
+plat5.position.set(5, 1, -21);
+
+const plat6 = new THREE.Mesh(cubeGeo, whiteMat);
+scene.add(plat6);
+plat6.position.set(8, 1, -26);
+
+const veryBigGeo = new THREE.BoxGeometry(10, 1, 10);
+const plat7 = new THREE.Mesh(veryBigGeo, whiteMat);
+scene.add(plat7);
+plat7.position.set(10, 0, -36);
+
+const redMat = new THREE.MeshBasicMaterial({color:0x880808});
+const enemy = new THREE.Mesh(cubeGeo, redMat);
+scene.add(enemy);
+enemy.position.set(10, 1, -36);
+
+const smallGeo = new THREE.BoxGeometry(0, 0, 0);
+const enemySensor1 = new THREE.Mesh(smallGeo, whiteMat);
+scene.add(enemySensor1);
+const enemySensor2 = new THREE.Mesh(smallGeo, whiteMat);
+scene.add(enemySensor2);
+const enemySensor3 = new THREE.Mesh(smallGeo, whiteMat);
+scene.add(enemySensor3);
+const enemySensor4 = new THREE.Mesh(smallGeo, whiteMat);
+scene.add(enemySensor4);
+const enemyTopGeo = new THREE.BoxGeometry(1, .5, 1);
+const enemyTopSensor = new THREE.Mesh(enemyTopGeo, whiteMat);
+scene.add(enemyTopSensor);
+enemyTopSensor.visible = false;
+
+const plat8 = new THREE.Mesh(recGeo, whiteMat);
+scene.add(plat8);
+plat8.position.set(10, 2, -44);
+
+const longBigGeo = new THREE.BoxGeometry(5, 1, 20);
+const plat9 = new THREE.Mesh(longBigGeo, whiteMat);
+scene.add(plat9);
+plat9.position.set(10, 2, -59);
+
+const wallLongBigGeo = new THREE.BoxGeometry(1, 10, 20);
+const plat10 = new THREE.Mesh(wallLongBigGeo, whiteMat);
+scene.add(plat10);
+plat10.position.set(12.5, 7, -59);
+
+const plat11 = new THREE.Mesh(wallLongBigGeo, whiteMat);
+scene.add(plat11);
+plat11.position.set(7.5, 7, -59);
+
+const laserGeo = new THREE.BoxGeometry(5, 6, 1);
+const laser1 = new THREE.Mesh(laserGeo, purpleMat);
+scene.add(laser1);
+laser1.position.set(10, 5, -54);
+
+const laser2 = new THREE.Mesh(laserGeo, purpleMat);
+scene.add(laser2);
+laser2.position.set(10, 5, -60);
+
+const laser3 = new THREE.Mesh(laserGeo, purpleMat);
+scene.add(laser3);
+laser3.position.set(10, 5, -66);
+
+var platforms = [plat1, plat2, plat3, plat4, movingPlat, plat5, plat6, plat7, plat8, plat9, plat10, plat11];
+camera.position.z = 5;
+
+document.onclick = function(event) {
+controls.lock();
+lookStart = true;
+}
+
+function animate() {
+gameLoop()
+renderer.render( scene, camera );
+requestAnimationFrame( animate );
+};
+
+animate();
+
+function gameLoop() {
+move();
+placeSensors();
+sense();
+jump();
+gravity();
+death();
+movePlats();
+progress();
+placeEnemySensors();
+enemyMove();
+enemyDie();
+activateLasers();
+}
+
+function keyDown(event) {
+controls.lock();
+if (event.key == 'a') {aDown = true;}
+if (event.key == 'd') {dDown = true;}
+if (event.key == 'w') {wDown = true;}
+if (event.key == 's') {sDown = true;}
+if (event.key == ' ') {spaceDown = true;}
+}
+
+function keyUp(event) {
+if (event.key == 'a') {aDown = false;}
+if (event.key == 'd') {dDown = false;}
+if (event.key == 'w') {wDown = false;}
+if (event.key == 's') {sDown = false;}
+if (event.key == ' ') {spaceDown = false;}
+}
+
+function move() {
+if (aDown) {controls.moveRight(-.1);}
+if (dDown) {controls.moveRight(.1);}
+if (wDown) {controls.moveForward(.1);}
+if (sDown) {controls.moveForward(-.1);}
+}
+
+function collide(mesh, mesh2) {
+var meshXRight = mesh.position.x + mesh.geometry.parameters.width / 2;
+var meshXLeft = mesh.position.x - mesh.geometry.parameters.width / 2;
+var meshYUp = mesh.position.y + mesh.geometry.parameters.height / 2;
+var meshYDown = mesh.position.y - mesh.geometry.parameters.height / 2;
+var meshZRight = mesh.position.z + mesh.geometry.parameters.depth / 2;
+var meshZLeft = mesh.position.z - mesh.geometry.parameters.depth / 2;
+
+var mesh2XRight = mesh2.position.x + mesh2.geometry.parameters.width / 2;
+var mesh2XLeft = mesh2.position.x - mesh2.geometry.parameters.width / 2;
+var mesh2YUp = mesh2.position.y + mesh2.geometry.parameters.height / 2;
+var mesh2YDown = mesh2.position.y - mesh2.geometry.parameters.height / 2;
+var mesh2ZRight = mesh2.position.z + mesh2.geometry.parameters.depth / 2;
+var mesh2ZLeft = mesh2.position.z - mesh2.geometry.parameters.depth / 2;
+if (meshXRight >= mesh2XLeft && meshXLeft <= mesh2XRight && meshYUp >= mesh2YDown && meshYDown <= mesh2YUp && meshZRight >= mesh2ZLeft && meshZLeft <= mesh2ZRight) {
+return true;
+} else {
+return false;
+}
+}
+
+function placeSensors() {
+leftSensor.position.x = camera.position.x - 0.5;
+leftSensor.position.z = camera.position.z;
+leftSensor.position.y = camera.position.y;
+
+rightSensor.position.x = camera.position.x + 0.5;
+rightSensor.position.z = camera.position.z;
+rightSensor.position.y = camera.position.y;
+
+frontSensor.position.x = camera.position.x;
+frontSensor.position.z = camera.position.z + .5;
+frontSensor.position.y = camera.position.y;
+
+backSensor.position.x = camera.position.x;
+backSensor.position.z = camera.position.z - .5;
+backSensor.position.y = camera.position.y;
+
+bottomSensor.position.x = camera.position.x;
+bottomSensor.position.z = camera.position.z;
+bottomSensor.position.y = camera.position.y - .5;
+}
+
+function sense() {
+if (collidePlatforms(leftSensor)) {camera.position.x += .1;}
+if (collidePlatforms(rightSensor)) {camera.position.x -= .1;}
+if (collidePlatforms(frontSensor)) {camera.position.z -= .1;}
+if (collidePlatforms(backSensor)) {camera.position.z += .1;}
+}
+
+function collidePlatforms(mesh) {
+for (var i = 0; i < platforms.length; i++) {
+if (collide(mesh, platforms[i])) {
+return true;
+}
+}
+return false;
+}
+
+function jump() {
+if (collidePlatforms(bottomSensor)) {onGround = true; gravityMultiplier = 1;} else {onGround = false;}
+if (onGround && spaceDown) {jumping = 20;}
+if (jumping > 0) {
+jumping -= 1;
+camera.position.y += .4;
+}
+}
+
+function gravity() {
+if (!onGround) {
+gravityMultiplier += .03;
+camera.position.y -= .1 * gravityMultiplier;
+}
+}
+
+function death() {
+if (camera.position.y < -30) {
+camera.position.y = spawnPoint.position.y + 2;
+camera.position.x = spawnPoint.position.x;
+camera.position.z = spawnPoint.position.z;
+gravityMultiplier = 0;
+}
+
+if (collide(leftSensor, enemy) || collide(rightSensor, enemy) || collide(frontSensor, enemy) || collide(backSensor, enemy)) {
+camera.position.y = spawnPoint.position.y + 2;
+camera.position.x = spawnPoint.position.x;
+camera.position.z = spawnPoint.position.z;
+gravityMultiplier = 0;
+}
+
+if (collide(leftSensor, laser1) || collide(rightSensor, laser1) || collide(frontSensor, laser1) || collide(backSensor, laser1)) {
+camera.position.y = spawnPoint.position.y + 2;
+camera.position.x = spawnPoint.position.x;
+camera.position.z = spawnPoint.position.z;
+gravityMultiplier = 0;
+}
+
+if (collide(leftSensor, laser2) || collide(rightSensor, laser2) || collide(frontSensor, laser2) || collide(backSensor, laser2)) {
+camera.position.y = spawnPoint.position.y + 2;
+camera.position.x = spawnPoint.position.x;
+camera.position.z = spawnPoint.position.z;
+gravityMultiplier = 0;
+}
+
+if (collide(leftSensor, laser3) || collide(rightSensor, laser3) || collide(frontSensor, laser3) || collide(backSensor, laser3)) {
+camera.position.y = spawnPoint.position.y + 2;
+camera.position.x = spawnPoint.position.x;
+camera.position.z = spawnPoint.position.z;
+gravityMultiplier = 0;
+}
+}
+
+var moveCount = 400;
+function movePlats() {
+if (moveCount <= 200) {
+moveCount += 1;
+movingPlat.position.z -= .04;
+}
+if (moveCount > 200) {
+moveCount += 1;
+movingPlat.position.z += .04;
+}
+if (moveCount > 400) {
+moveCount = 0;
+}
+}
+
+function distance(mesh1, mesh2) {
+var xDis = mesh1.position.x - mesh2.position.x;
+var yDis = mesh1.position.z - mesh2.position.z;
+var zDis = mesh1.position.y - mesh2.position.y;
+var distances = Math.sqrt(xDis * xDis + yDis * yDis);
+distances = Math.sqrt(distances * distances + zDis * zDis);
+return distances;
+}
+
+function progress() {
+if (distance(camera, checkPoint) < 1.5) {
+checkPoint.visible = false;
+spawnPoint.position.set(checkPoint.position.x, checkPoint.position.y, checkPoint.position.z);
+}
+}
+
+function placeEnemySensors() {
+enemySensor1.position.set(enemy.position.x, enemy.position.y - .5, enemy.position.z + .5);
+enemySensor2.position.set(enemy.position.x, enemy.position.y - .5, enemy.position.z - .5);
+enemySensor3.position.set(enemy.position.x -= .5, enemy.position.y - .5, enemy.position.z);
+enemySensor4.position.set(enemy.position.x += .5, enemy.position.y - .5, enemy.position.z);
+enemyTopSensor.position.set(enemy.position.x, enemy.position.y + .7, enemy.position.z);
+}
+
+function enemyMove() {
+if (distance(enemy, camera) < 9) {
+if (enemy.position.x > camera.position.x) {
+enemy.position.x -= .03;
+} else {
+enemy.position.x += .03;
+}
+if (enemy.position.z > camera.position.z) {
+enemy.position.z -= .03;
+} else {
+enemy.position.z += .03;
+}
+}
+
+if (!collidePlatforms(enemySensor1)) {enemy.position.z -= .03;}
+if (!collidePlatforms(enemySensor2)) {enemy.position.z += .03;}
+if (!collidePlatforms(enemySensor3)) {enemy.position.x += .03;}
+if (!collidePlatforms(enemySensor4)) {enemy.position.x -= .03;}
+}
+
+function enemyDie() {
+if (collide(enemyTopSensor, bottomSensor)) {
+enemy.visible = false;
+enemy.position.y = -1000;
+jumping = 20;
+gravityMultiplier = 1;
+}
+}
+
+var delay = 0;
+function activateLasers() {
+if (delay > 199) {
+delay = 0;
+} else {
+delay += 1;
+}
+if (delay < 99) {
+laser1.position.y = 10000;
+laser2.position.y = 5;
+laser3.position.y = 10000;
+}
+if (delay >= 50) {
+laser1.position.y = 5;
+laser2.position.y = 10000;
+laser3.position.y = 5;
+}
+}
+
+var lookX = 0;
+var lookY = 0;
+function mouseMove(event) {
+if (lookStart) {
+//500
+lookX -= event.movementX;
+lookY -= event.movementY / 500;
+var num = lookX / 500;
+console.log(Number(lookY.toFixed(3)));
+console.log(camera.rotation.x);
+}
+}
+</script>
+</body>
+</html>

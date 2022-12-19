@@ -1,0 +1,492 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>3d</title>
+<style>
+body { margin: 0; }
+#health.absolute {
+position: absolute;
+top: 600px;
+right: 1;
+width: 20px;
+height: 20px;
+font-size: 30px;
+}
+</style>
+</head>
+<body style="text-align:center; background-color: green">
+<h1 style="font-size: 100px" id="choose">Choose your difficulty</h1>
+<h2 onClick="normal(event)" id="normals" style="font-size: 50px">normal</h2>
+<h3 onClick="hard(event)" id="hards" style="font-size: 50px">hard</h3>
+<div class="absolute" id="health">
+<script src="three.js"></script>
+<script src="PointerLockControls.js"></script>
+<script>
+
+window.addEventListener('keydown', keyDown);
+window.addEventListener('keyup', keyUp);
+window.addEventListener('mousemove', mouseMove);
+var playerHealth = 5;
+var shooting = 100;
+var cubeHealth = 10;
+var cube2Health = 10;
+var wDown = false;
+var aDown = false;
+var dDown = false;
+var sDown = false;
+var spaceDown = false;
+var lookX = 0;
+var lookY = 0;
+var lookStart = false;
+var jumping = 0;
+var cubeDead = false;
+var cube2Dead = false;
+var started = false;
+var shootSpeed = .2;
+var lookSpeed = .01;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const _vector = new THREE.Vector3();
+
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+
+const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+const material = new THREE.MeshBasicMaterial( { color: 0x808080 } );
+const cube = new THREE.Mesh( geometry, material );
+scene.add( cube );
+const cube2 = new THREE.Mesh( geometry, material );
+scene.add( cube2 );
+cube2.position.x = 5;
+const smallGeometry = new THREE.BoxGeometry( 0, 0, 0 );
+const blueMat = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
+const looker = new THREE.Mesh( smallGeometry, blueMat );
+scene.add( looker );
+const looker2 = new THREE.Mesh( smallGeometry, blueMat );
+scene.add( looker2 );
+const looker3 = new THREE.Mesh( smallGeometry, blueMat );
+scene.add( looker3 );
+const looker4 = new THREE.Mesh( smallGeometry, blueMat );
+scene.add( looker4 );
+const grassGeo = new THREE.BoxGeometry( 100, 1, 100 );
+const grassMat = new THREE.MeshBasicMaterial( { color: 0x90ff00 } );
+const grassMesh = new THREE.Mesh( grassGeo, grassMat );
+grassMesh.receiveShadow = true;
+scene.add( grassMesh );
+grassMesh.position.x = camera.position.x;
+grassMesh.position.y -= 1;
+const blackMat = new THREE.MeshBasicMaterial( { color: 0x101010 } );
+const pewGeo = new THREE.CapsuleGeometry( .1, .01, 32, 64 );
+const pew = new THREE.Mesh( pewGeo, blackMat );
+scene.add(pew);
+pew.visible = false;
+const pew3 = new THREE.Mesh( pewGeo, blackMat );
+scene.add(pew3);
+pew3.visible = false;
+const pew2 = new THREE.Mesh( pewGeo, blackMat );
+scene.add(pew2);
+pew2.position.x = 100;
+pew2.visible = false;
+const healthGeo = new THREE.BoxGeometry( 1, .25, .001 );
+const healthBackGeo = new THREE.BoxGeometry( 1, .25, 0 );
+const redMat = new THREE.MeshBasicMaterial({color: 0xff0000});
+const healthBar = new THREE.Mesh( healthGeo, redMat );
+scene.add(healthBar);
+const whiteMat = new THREE.MeshBasicMaterial({color: 0xffffff});
+const healthBarBackground = new THREE.Mesh( healthBackGeo, whiteMat );
+scene.add(healthBarBackground);
+healthBar.position.y = 1;
+healthBarBackground.position.y = 1;
+const healthBar2 = new THREE.Mesh( healthGeo, redMat );
+scene.add(healthBar2);
+const healthBarBackground2 = new THREE.Mesh( healthBackGeo, whiteMat );
+scene.add(healthBarBackground2);
+healthBar2.position.y = 1;
+healthBarBackground2.position.y = 1;
+const eye1 = new THREE.Mesh( pewGeo, blueMat );
+scene.add(eye1);
+const eye2 = new THREE.Mesh( pewGeo, blueMat );
+scene.add(eye2);
+const eye3 = new THREE.Mesh( pewGeo, blueMat );
+scene.add(eye3);
+const eye4 = new THREE.Mesh( pewGeo, blueMat );
+scene.add(eye4);
+scene.background = new THREE.Color(0xceeb)
+var controls = new THREE.PointerLockControls(camera, document.body);
+
+function keyDown(event) {
+if (event.key == 'Escape') {lookStart = false;}
+if (event.key == 'w') {wDown = true;}
+if (event.key == 'a') {aDown = true;}
+if (event.key == 'd') {dDown = true;}
+if (event.key == 's') {sDown = true;}
+if (event.key == ' ') {spaceDown = true;}
+}
+
+function keyUp(event) {
+if (event.key == 'w') {wDown = false;}
+if (event.key == 'a') {aDown = false;}
+if (event.key == 'd') {dDown = false;}
+if (event.key == 's') {sDown = false;}
+if (event.key == ' ') {spaceDown = false;}
+}
+
+document.onclick = function(event) {
+shooting = 0;
+shoot();
+controls.lock();
+lookStart = true;
+}
+camera.position.z = 5;
+
+function animate() {
+if (started) {
+gameLoop();
+renderer.render( scene, camera );
+}
+requestAnimationFrame( animate );
+};
+
+animate();
+
+function gameLoop() {
+looker.position.x = cube.position.x;
+looker.position.z = cube.position.z;
+looker.rotation.y = cube.rotation.y;
+forward(looker, triangle(cube, camera)[0]);
+
+looker2.position.x = cube.position.x;
+looker2.position.z = cube.position.z;
+looker2.rotation.y = cube.rotation.y + .4;
+forward(looker2, triangle(cube, camera)[0]);
+
+if (triangle(looker, camera)[0] > triangle(looker2, camera)[0]) {cube.rotation.y += lookSpeed} else {cube.rotation.y -= lookSpeed}
+
+looker3.position.x = cube2.position.x;
+looker3.position.z = cube2.position.z;
+looker3.rotation.y = cube2.rotation.y;
+forward(looker3, triangle(cube2, camera)[0]);
+
+looker4.position.x = cube2.position.x;
+looker4.position.z = cube2.position.z;
+looker4.rotation.y = cube2.rotation.y + .4;
+forward(looker4, triangle(cube2, camera)[0]);
+
+if (triangle(looker3, camera)[0] > triangle(looker4, camera)[0]) {cube2.rotation.y += lookSpeed} else {cube2.rotation.y -= lookSpeed}
+move();
+cubeShoot();
+cube2Shoot();
+shoot();
+cubeHit();
+updateHealthBar();
+updateBody();
+cubeMove();
+boundries();
+updatePlayerHealth();
+jump();
+cubesDead();
+playerDie();
+}
+
+function cameraCollide(mesh) {
+if (mesh.position.x - mesh.geometry.parameters.width / 2 <= camera.position.x && camera.position.x <= mesh.position.x + mesh.geometry.parameters.width / 2 &&
+mesh.position.z + mesh.geometry.parameters.depth / 2 >= camera.position.z && camera.position.z >= mesh.position.z - mesh.geometry.parameters.depth / 2) {
+console.log("collide!");
+}
+}
+
+function collide(mesh, mesh2) {
+var one;
+var two;
+if (mesh == camera) {
+one = 1;
+} else {
+if (mesh.geometry.type = 'CapsuleGeometry') {one = mesh.geometry.parameters.height;} else {one = mesh.geometry.parameters.width;}
+}
+if (mesh2 == camera) {
+two = 1;
+} else {
+if (mesh2.geometry.type = 'CapsuleGeometry') {two = mesh2.geometry.parameters.height;} else {two = mesh2.geometry.parameters.width;}
+}
+if (triangle(mesh, mesh2)[0] <= one + two) {
+return true;
+} else {
+return false;
+}
+}
+
+function triangle(mesh1, mesh2) {
+var xDis = mesh1.position.x - mesh2.position.x;
+var yDis = mesh1.position.z - mesh2.position.z;
+var zDis = mesh1.position.y - mesh2.position.y;
+var distance = Math.sqrt(xDis * xDis + yDis * yDis);
+distance = Math.sqrt(distance * distance + zDis * zDis);
+var data = [distance, xDis, yDis]
+return data;
+}
+
+function forward(mesh, amount) {
+_vector.setFromMatrixColumn( mesh.matrix, 0 );
+_vector.crossVectors( mesh.up, _vector );
+mesh.position.addScaledVector( _vector, amount );
+}
+
+var cubeShooting = 100;
+function cubeShoot() {
+if (!cubeDead) {
+if (cubeShooting == 100) {
+cubeShooting = 0;
+pew.position.x = cube.position.x;
+pew.position.y = cube.position.y;
+pew.position.z = cube.position.z;
+pew.rotation.y = cube.rotation.y + .2;
+pew.visible = true
+} else {
+cubeShooting += 1;
+forward(pew, shootSpeed);
+}
+}
+}
+
+var cube2Shooting = 100;
+function cube2Shoot() {
+if (!cube2Dead) {
+if (cube2Shooting == 100) {
+cube2Shooting = 0;
+pew3.position.x = cube2.position.x;
+pew3.position.y = cube2.position.y;
+pew3.position.z = cube2.position.z;
+pew3.rotation.y = cube2.rotation.y + .2;
+pew3.visible = true
+} else {
+cube2Shooting += 1;
+forward(pew3, shootSpeed);
+}
+}
+}
+
+function move() {
+if (wDown) {controls.moveForward(.1);}
+if (sDown) {controls.moveForward(-.1);}
+if (aDown) {controls.moveRight(-.1);}
+if (dDown) {controls.moveRight(.1);}
+}
+
+var storeRotaX = 0;
+function shoot() {
+if (shooting == 0) {
+pew2.position.x = camera.position.x;
+pew2.position.y = camera.position.y;
+pew2.position.z = camera.position.z;
+pew2.rotation.y = lookX;
+pew2.visible = true;
+storeRotaX = lookY;
+}
+if (shooting == 100) {
+pew2.visible = false;
+} else {
+shooting += 1;
+forward(pew2, .2);
+pew2.position.y += storeRotaX / Math.PI / 1.5;
+}
+
+}
+
+function cubeHit() {
+if (collide(pew2, cube) && !cubeDead) {
+cubeHealth -= 1;
+pew2.position.x = 1000;
+}
+
+if (collide(pew2, cube2) && !cube2Dead) {
+cube2Health -= 1;
+pew2.position.x = 1000;
+}
+}
+
+function updateHealthBar() {
+healthBar.scale.x = cubeHealth / 10 * 3;
+healthBar.position.z = cube.position.z;
+healthBar.position.x = cube.position.x;
+healthBar.rotation.y = cube.rotation.y;
+
+healthBarBackground.position.z = cube.position.z;
+healthBarBackground.position.x = cube.position.x;
+healthBarBackground.rotation.y = cube.rotation.y;
+healthBarBackground.scale.x = 3;
+
+healthBar2.scale.x = cube2Health / 10 * 3;
+healthBar2.position.z = cube2.position.z;
+healthBar2.position.x = cube2.position.x;
+healthBar2.rotation.y = cube2.rotation.y;
+
+healthBarBackground2.position.z = cube2.position.z;
+healthBarBackground2.position.x = cube2.position.x;
+healthBarBackground2.rotation.y = cube2.rotation.y;
+healthBarBackground2.scale.x = 3;
+}
+
+function mouseMove(event) {
+if (lookStart) {
+//500
+lookX -= event.movementX / 500;
+lookY -= event.movementY / 500;
+lookX = Number(lookX.toFixed(3));
+lookY = Number(lookY.toFixed(3));
+}
+}
+
+function updateBody() {
+eye1.position.y = .2;
+eye2.position.y = .2;
+eye1.position.x = cube.position.x;
+eye2.position.x = cube.position.x;
+eye1.position.z = cube.position.z;
+eye2.position.z = cube.position.z;
+eye1.rotation.y = cube.rotation.y + .4;
+eye2.rotation.y = cube.rotation.y - .4;
+forward(eye1, .5);
+forward(eye2, .5);
+
+eye3.position.y = .2;
+eye4.position.y = .2;
+eye3.position.x = cube2.position.x;
+eye4.position.x = cube2.position.x;
+eye3.position.z = cube2.position.z;
+eye4.position.z = cube2.position.z;
+eye3.rotation.y = cube2.rotation.y + .4;
+eye4.rotation.y = cube2.rotation.y - .4;
+forward(eye3, .5);
+forward(eye4, .5);
+}
+
+function cubeMove() {
+if (triangle(cube, camera)[0] > 10) {
+if (cube.position.x > camera.position.x) {
+cube.position.x -= .03;
+} else {
+cube.position.x += .03;
+}
+if (cube.position.z > camera.position.z) {
+cube.position.z -= .035;
+} else {
+cube.position.z += .035;
+}
+}
+
+if (triangle(cube2, camera)[0] > 15) {
+if (cube2.position.x > camera.position.x) {
+cube2.position.x -= .035;
+} else {
+cube2.position.x += .035;
+}
+if (cube2.position.z > camera.position.z) {
+cube2.position.z -= .03;
+} else {
+cube2.position.z += .03;
+}
+}
+}
+
+function boundries() {
+if (camera.position.x > 49) {
+camera.position.x -= .1;
+}
+if (camera.position.x < -49) {
+camera.position.x += .1;
+}
+if (camera.position.z > 49) {
+camera.position.z -= .1;
+}
+if (camera.position.z < -49) {
+camera.position.z += .1;
+}
+}
+
+function updatePlayerHealth() {
+if (collide(pew, camera)) {
+playerHealth -= 1;
+pew.position.x = 1000;
+}
+
+if (collide(pew3, camera)) {
+playerHealth -= 1;
+pew3.position.x = 1000;
+}
+document.getElementById('health').innerHTML = playerHealth;
+}
+
+var fallMultiplier = 1;
+function jump() {
+if (camera.position.y <= 0 && spaceDown) {
+fallMultiplier = 1;
+jumping = 15;
+}
+if (jumping > 0) {
+jumping -= 1;
+camera.position.y += .4;
+}
+if (camera.position.y > 0) {
+fallMultiplier += .1;
+camera.position.y -= .06 * fallMultiplier;
+}
+if (camera.position.y < 0) {
+camera.position.y = 0;
+}
+}
+
+function cubesDead() {
+if (cubeHealth <= 0) {
+cubeDead = true;
+cube.visible = false;
+eye1.visible = false;
+eye2.visible = false;
+pew.visible = false;
+pew.position.x = 1000;
+healthBar.visible = false;
+healthBarBackground.visible = false;
+}
+
+if (cube2Health <= 0) {
+cube2Dead = true;
+cube2.visible = false;
+eye3.visible = false;
+eye4.visible = false;
+pew3.visible = false;
+pew3.position.x = 1000;
+healthBar2.visible = false;
+healthBarBackground2.visible = false;
+}
+}
+
+var normals = document.getElementById('normals');
+function normal() {
+started = true;
+normals.remove();
+hards.remove();
+choose.remove();
+}
+
+var hards = document.getElementById('hards');
+function hard() {
+started = true;
+playerHealth = 1;
+shootSpeed = .5;
+lookSpeed = .04;
+normals.remove();
+hards.remove();
+choose.remove();
+}
+
+function playerDie() {
+if (playerHealth <= 0) {
+started = false;
+window.location.href = "dead.htm";
+renderer.render( scene, camera );
+}
+}
+</script>
+</body>
+</html>

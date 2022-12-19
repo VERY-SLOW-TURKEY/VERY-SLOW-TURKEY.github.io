@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>
+You Are Dead
+</title>
+<style>
+body {
+text-align: center;
+background-color: #900000;
+}
+#dead {
+font-size: 100px;
+}
+#restartButton {
+font-size: 50px;
+}
+#restartButton:hover {
+font-size: 50px;
+text-decoration: underline;
+}
+</style>
+</head>
+<body>
+<p id="dead">
+<p id="restartButton" onClick="history.back()">restart</p>
+<script>
+deathMessages = ['DEAD', 'You Are Dead!', 'You Have Died'];
+deathMessage = deathMessages[Math.floor(Math.random() * deathMessages.length)];
+document.getElementById('dead').innerHTML = deathMessage;
+</script>
+</body>
+</html>
