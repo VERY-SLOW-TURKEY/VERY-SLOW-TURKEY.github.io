@@ -218,7 +218,7 @@ if (collide(front(opponentCar2), walls[i])) {opponentCar2.position.z -= speed;}
 
 var radsToTurn = 0;
 function controlOpponentCar1() {
-forward(opponentCar1, speed - Math.random() / 1000);
+forward(opponentCar1, speed + Math.random() / 1000);
 for (i=0; i < corners.length; i++) {
 if (collide(opponentCar1, corners[i])) {
 var amountTurned = Math.random() / 9.5;
@@ -234,7 +234,7 @@ if (radsToTurn <= 0 && !collide(opponentCar1, corners[0]) && !collide(opponentCa
 
 var radsToTurn2 = 0;
 function controlOpponentCar2() {
-forward(opponentCar2, speed - Math.random() / 1000);
+forward(opponentCar2, speed + Math.random() / 1000);
 for (i=0; i < corners.length; i++) {
 if (collide(opponentCar2, corners[i])) {
 var amountTurned2 = Math.random() / 9.5;
