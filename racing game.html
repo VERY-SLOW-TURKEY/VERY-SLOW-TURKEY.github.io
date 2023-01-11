@@ -1,0 +1,292 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Bean Racers</title>
+<style>
+body { margin: 0; }
+
+div {
+position: absolute;
+top: 10px;
+width: 100%;
+font-size: 400%;
+font-family: sans-serif;
+text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div id='text'>3</div>
+
+<script src="three.js"></script>
+<script>
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const _vector = new THREE.Vector3();
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+
+window.addEventListener('keydown', keyDown);
+window.addEventListener('keyup', keyUp);
+
+// variables
+var aDown = false;
+var dDown = false;
+var speed = 0.1;
+var handling = 50;
+var gameOn = false;
+
+const light = new THREE.AmbientLight(0x000000, 0.5);
+scene.add( light );
+const carGeo = new THREE.BoxGeometry(1, 1, 2);
+const redMat = new THREE.MeshBasicMaterial({color: 0xcc0000});
+const dynamicMat = new THREE.MeshNormalMaterial();
+const playerCar = new THREE.Mesh(carGeo, redMat);
+scene.add(playerCar);
+playerCar.position.set(20, 0, 0);
+const midGeo = new THREE.BoxGeometry(30, 1.5, 100);
+const middle = new THREE.Mesh(midGeo, dynamicMat);
+scene.add(middle);
+scene.background = new THREE.Color(0xceeb)
+const roadGeo = new THREE.BoxGeometry(50, 1, 125)
+const blackMat = new THREE.MeshBasicMaterial({color: 0x000000});
+const road = new THREE.Mesh(roadGeo, blackMat);
+scene.add(road);
+road.position.y = -1;
+const sideWallGeo = new THREE.BoxGeometry(1, 1.5, 125);
+const rightWall = new THREE.Mesh(sideWallGeo, dynamicMat);
+scene.add(rightWall);
+rightWall.position.set(25, 0, 0);
+const leftWall = new THREE.Mesh(sideWallGeo, dynamicMat);
+scene.add(leftWall);
+leftWall.position.set(-25, 0, 0);
+const frontWallGeo = new THREE.BoxGeometry(50, 1.5, 1);
+const frontWall = new THREE.Mesh(frontWallGeo, dynamicMat);
+scene.add(frontWall);
+frontWall.position.set(0, 0, 62.5);
+const backWall = new THREE.Mesh(frontWallGeo, dynamicMat);
+scene.add(backWall);
+backWall.position.set(0, 0, -62.5);
+const cornerGeo = new THREE.BoxGeometry(10, 1, 12.5);
+const corner1 = new THREE.Mesh(cornerGeo, redMat);
+scene.add(corner1);
+corner1.visible = false;
+corner1.position.set(20, 0, 56.25);
+const corner2 = new THREE.Mesh(cornerGeo, redMat);
+scene.add(corner2);
+corner2.visible = false;
+corner2.position.set(-20, 0, 56.25);
+const corner3 = new THREE.Mesh(cornerGeo, redMat);
+scene.add(corner3);
+corner3.visible = false;
+corner3.position.set(-20, 0, -56.25);
+const corner4 = new THREE.Mesh(cornerGeo, redMat);
+scene.add(corner4);
+corner4.visible = false;
+corner4.position.set(20, 0, -56.25);
+const blueMat = new THREE.MeshBasicMaterial({color: 0x1010cc});
+const opponentCar1 = new THREE.Mesh(carGeo, blueMat);
+scene.add(opponentCar1);
+opponentCar1.position.set(18, 0, 0);
+const greenMat = new THREE.MeshBasicMaterial({color: 0x20cc20});
+const opponentCar2 = new THREE.Mesh(carGeo, greenMat);
+scene.add(opponentCar2);
+opponentCar2.position.set(22, 0, 0);
+
+walls = [middle, rightWall, leftWall, frontWall, backWall];
+corners = [corner1, corner2, corner3, corner4];
+checkpoints = [false, false, false, false];
+
+camera.position.set(0, 1, 3);
+
+function gameLoop() {
+if (gameOn) {
+movePlayerCar();
+senseWalls();
+controlOpponentCar1();
+controlOpponentCar2();
+checkpoint();
+finish();
+}
+renderer.render( scene, camera );
+window.requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+
+function keyDown(event) {
+if (event.key == 'a') {aDown = true;}
+if (event.key == 'd') {dDown = true;}
+if (event.key == 'f') {document.documentElement.requestFullscreen();}
+}
+
+function keyUp(event) {
+if (event.key == 'a') {aDown = false;}
+if (event.key == 'd') {dDown = false;}
+}
+
+function movePlayerCar() {
+if (aDown) {playerCar.rotation.y += handling / 2500;}
+if (dDown) {playerCar.rotation.y -= handling / 2500;}
+forward(playerCar, speed);
+camera.position.set(playerCar.position.x, playerCar.position.y + 2, playerCar.position.z);
+forward(camera, -5);
+camera.rotation.y = playerCar.rotation.y;
+}
+
+function forward(mesh, amount) {
+_vector.setFromMatrixColumn( mesh.matrix, 0 );
+_vector.crossVectors( mesh.up, _vector );
+mesh.position.addScaledVector( _vector, amount );
+}
+
+function right(mesh) {
+var rightMesh = {
+position:{x: mesh.position.x + mesh.geometry.parameters.width / 2 + 0.1, y: mesh.position.y, z: mesh.position.z},
+geometry:{parameters:{width: 0, height: mesh.geometry.parameters.height / 2, depth: mesh.geometry.parameters.depth / 2}}
+}
+return rightMesh;
+}
+function left(mesh) {
+var leftMesh = {
+position:{x: mesh.position.x - mesh.geometry.parameters.width / 2 - 0.1, y: mesh.position.y, z: mesh.position.z},
+geometry:{parameters:{width: 0, height: mesh.geometry.parameters.height / 2, depth: mesh.geometry.parameters.depth / 2}}
+}
+return leftMesh;
+}
+function front(mesh) {
+var frontMesh = {
+position:{x: mesh.position.x, y: mesh.position.y, z: mesh.position.z + mesh.geometry.parameters.depth / 2 + 0.1},
+geometry:{parameters:{width: mesh.geometry.parameters.width / 2, height: mesh.geometry.parameters.height / 2, depth: 0}}
+}
+return frontMesh;
+}
+function back(mesh) {
+var backMesh = {
+position:{x: mesh.position.x, y: mesh.position.y, z: mesh.position.z - mesh.geometry.parameters.depth / 2 - 0.1},
+geometry:{parameters:{width: mesh.geometry.parameters.width / 2, height: mesh.geometry.parameters.height / 2, depth: 0}}
+}
+return backMesh;
+}
+
+function collide(mesh, mesh2) {
+var meshXRight = mesh.position.x + mesh.geometry.parameters.width / 2;
+var meshXLeft = mesh.position.x - mesh.geometry.parameters.width / 2;
+var meshYUp = mesh.position.y + mesh.geometry.parameters.height / 2;
+var meshYDown = mesh.position.y - mesh.geometry.parameters.height / 2;
+var meshZRight = mesh.position.z + mesh.geometry.parameters.depth / 2;
+var meshZLeft = mesh.position.z - mesh.geometry.parameters.depth / 2;
+
+var mesh2XRight = mesh2.position.x + mesh2.geometry.parameters.width / 2;
+var mesh2XLeft = mesh2.position.x - mesh2.geometry.parameters.width / 2;
+var mesh2YUp = mesh2.position.y + mesh2.geometry.parameters.height / 2;
+var mesh2YDown = mesh2.position.y - mesh2.geometry.parameters.height / 2;
+var mesh2ZRight = mesh2.position.z + mesh2.geometry.parameters.depth / 2;
+var mesh2ZLeft = mesh2.position.z - mesh2.geometry.parameters.depth / 2;
+if (meshXRight >= mesh2XLeft && meshXLeft <= mesh2XRight && meshYUp >= mesh2YDown && meshYDown <= mesh2YUp && meshZRight >= mesh2ZLeft && meshZLeft <= mesh2ZRight) {
+return true;
+} else {
+return false;
+}
+}
+
+function senseWalls() {
+for (i=0; i < walls.length; i++) {
+if (collide(right(playerCar), walls[i])) {playerCar.position.x -= speed;}
+if (collide(left(playerCar), walls[i])) {playerCar.position.x += speed;}
+if (collide(back(playerCar), walls[i])) {playerCar.position.z += speed;}
+if (collide(front(playerCar), walls[i])) {playerCar.position.z -= speed;}
+}
+
+for (i=0; i < walls.length; i++) {
+if (collide(right(opponentCar1), walls[i])) {opponentCar1.position.x -= speed;}
+if (collide(left(opponentCar1), walls[i])) {opponentCar1.position.x += speed;}
+if (collide(back(opponentCar1), walls[i])) {opponentCar1.position.z += speed;}
+if (collide(front(opponentCar1), walls[i])) {opponentCar1.position.z -= speed;}
+}
+
+for (i=0; i < walls.length; i++) {
+if (collide(right(opponentCar2), walls[i])) {opponentCar2.position.x -= speed;}
+if (collide(left(opponentCar2), walls[i])) {opponentCar2.position.x += speed;}
+if (collide(back(opponentCar2), walls[i])) {opponentCar2.position.z += speed;}
+if (collide(front(opponentCar2), walls[i])) {opponentCar2.position.z -= speed;}
+}
+}
+
+var radsToTurn = 0;
+function controlOpponentCar1() {
+forward(opponentCar1, speed - Math.random() / 1000);
+for (i=0; i < corners.length; i++) {
+if (collide(opponentCar1, corners[i])) {
+var amountTurned = Math.random() / 9.5;
+if (radsToTurn < amountTurned) {amountTurned = radsToTurn;}
+if (radsToTurn > 0) {
+opponentCar1.rotation.y += amountTurned;
+radsToTurn -= amountTurned;
+}
+}
+}
+if (radsToTurn <= 0 && !collide(opponentCar1, corners[0]) && !collide(opponentCar1, corners[1]) && !collide(opponentCar1, corners[2]) && !collide(opponentCar1, corners[3])) {radsToTurn = Math.PI / 2;}
+}
+
+var radsToTurn2 = 0;
+function controlOpponentCar2() {
+forward(opponentCar2, speed - Math.random() / 1000);
+for (i=0; i < corners.length; i++) {
+if (collide(opponentCar2, corners[i])) {
+var amountTurned2 = Math.random() / 9.5;
+if (radsToTurn2 < amountTurned2) {amountTurned2 = radsToTurn2;}
+if (radsToTurn2 > 0) {
+opponentCar2.rotation.y += amountTurned2;
+radsToTurn2 -= amountTurned2;
+}
+}
+}
+if (radsToTurn2 <= 0 && !collide(opponentCar2, corners[0]) && !collide(opponentCar2, corners[1]) && !collide(opponentCar2, corners[2]) && !collide(opponentCar2, corners[3])) {radsToTurn2 = Math.PI / 2;}
+}
+
+camera.position.set(playerCar.position.x, playerCar.position.y + 2, playerCar.position.z);
+forward(camera, -5);
+camera.rotation.y = playerCar.rotation.y;
+setTimeout(startTimer1, 1000);
+function startTimer1() {document.getElementById('text').innerHTML = '2'; setTimeout(startTimer2, 1000);}
+function startTimer2() {document.getElementById('text').innerHTML = '1'; setTimeout(startTimer3, 1000);}
+function startTimer3() {document.getElementById('text').innerHTML = 'Go!'; setTimeout(startTimer4, 1000); gameOn = true;}
+function startTimer4() {document.getElementById('text').innerHTML = '';}
+
+function checkpoint() {
+for (i=0; i < corners.length; i++) {
+if (collide(playerCar, corners[i])) {
+checkpoints[i] = true;
+}
+}
+}
+
+function finish() {
+if (opponentCar1.position.x >= 0 && opponentCar1.position.z > 0 && opponentCar1.position.z < 1) {
+document.getElementById('text').innerHTML = 'You Lose!';
+gameOn = false;
+}
+if (opponentCar2.position.x >= 0 && opponentCar2.position.z > 0 && opponentCar2.position.z < 1) {
+document.getElementById('text').innerHTML = 'You Lose!';
+gameOn = false;
+}
+if (playerCar.position.x >= 0 && playerCar.position.z > 0 && playerCar.position.z < 1) {
+if (checkpoints[0] && checkpoints[1] && checkpoints[2] && checkpoints[3]) {
+document.getElementById('text').innerHTML = 'You Win!';
+gameOn = false;
+}
+}
+}
+
+window.onresize = function() {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+}
+</script>
+</body>
+</html>
