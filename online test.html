@@ -38,6 +38,7 @@ const app = firebase.initializeApp(firebaseConfig);
 
 var counter = 0;
 
+
 function increase() {
 counter++;
 document.getElementById('counterDisplay').innerHTML = counter;
@@ -45,6 +46,8 @@ document.getElementById('counterDisplay').innerHTML = counter;
 
 firebase.auth().onAuthStateChanged((user) => {
 console.log(user);
+testRef = firebase.database().ref('counting');
+testRef.set(counter);
 })
 
 firebase.auth().signInAnonymously().catch((error) => {
