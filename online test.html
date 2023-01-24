@@ -42,6 +42,7 @@ var counter = 0;
 function increase() {
 counter++;
 document.getElementById('counterDisplay').innerHTML = counter;
+testRef.set(counter);
 }
 
 firebase.auth().onAuthStateChanged((user) => {
