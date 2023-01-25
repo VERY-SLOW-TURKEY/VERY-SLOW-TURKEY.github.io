@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Online Game</title>
+<style>
+body {margin:0;}
+</style>
+</head>
+<body>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+const firebaseConfig = {
+apiKey: "AIzaSyAMDj5Cog1xiuK5cfZsWQFToykncdOZeAI",
+authDomain: "online-game-4af9e.firebaseapp.com",
+databaseURL: "https://online-game-4af9e-default-rtdb.firebaseio.com",
+projectId: "online-game-4af9e",
+storageBucket: "online-game-4af9e.appspot.com",
+messagingSenderId: "342143193117",
+appId: "1:342143193117:web:abcb38a2d6d7ccbc8e36f4"
+};
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+
+var canvas = document.createElement('canvas');
+canvas.height = window.innerHeight / 1.005;
+canvas.width = window.innerWidth / 1.005;
+var c = canvas.getContext('2d');
+
+window.requestAnimationFrame(gameLoop);
+window.addEventListener('keyup', keyUp);
+window.addEventListener('keydown', keyDown);
+
+// variables
+var players = [];
+const playerId;
+var aDown = false;
+var dDown = false;
+var wDown = false;
+var sDown = false;
+var playerPos = {x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight
+};
+
+firebase.auth().onAuthStateChanged((user) => {
+console.log(user);
+playerId = user.uid;
+gameRef = firebase.database().ref(playerId);
+gameRef.set(playerPos);
+start();
+})
+
+function gameLoop() {
+draw();
+move();
+window.requestAnimationFrame(gameLoop);
+}
+
+
+function start() {
+gameRef.on('value', (snapshot) => {
+drawPlayers();
+});
+  
+gameRef.on('child_added', (snapshot) => {
+players.push(snapshot.val());
+});
+}
+
+function draw() {
+c.fillStyle = 'white';
+c.fillRect(0, 0, window.innerHeight, window.innerWidth);
+}
+
+function drawPlayers() {
+for(i = 0; i < players.length; i++) {
+c.fillStyle = 'grey';
+c.fillRect(players[i].x, players[i].y, 40, 40);
+}
+}
+
+function keyDown(event) {
+if (event.key == 'a') {aDown = true;}
+if (event.key == 'd') {dDown = true;}
+if (event.key == 'w') {wDown = true;}
+if (event.key == 's') {sDown = true;}
+}
+
+function keyUp(event) {
+if (event.key == 'a') {aDown = false;}
+if (event.key == 'd') {dDown = false;}
+if (event.key == 'w') {wDown = false;}
+if (event.key == 's') {sDown = false;}
+}
+
+function move() {
+if (aDown) {
+playerPos.x -= 3;
+gameRef.set(playerPos);
+}
+if (dDown) {
+playerPos.x += 3;
+gameRef.set(playerPos);
+}
+if (wDown) {
+playerPos.y -= 3;
+gameRef.set(playerPos);
+}
+if (sDown) {
+playerPos.y += 3;
+gameRef.set(playerPos);
+}
+}
+
+document.body.appendChild(canvas);
+</script>
+</body>
+</html>
