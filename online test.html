@@ -37,24 +37,27 @@ appId: "1:1068951862249:web:80923d021d32e80d18e978"
 const app = firebase.initializeApp(firebaseConfig);
 
 var counter = 0;
-
+var worldCounter = 0;
 
 function increase() {
 counter++;
 document.getElementById('counterDisplay').innerHTML = counter;
-testRef.set(counter);
+testRef.set(worldCounter + counter);
 }
 
 firebase.auth().onAuthStateChanged((user) => {
 console.log(user);
 testRef = firebase.database().ref('counting');
-testRef.set(counter);
 })
 
 firebase.auth().signInAnonymously().catch((error) => {
 var errorCode = error.code;
 var errorMessage = error.message;
 console.log(errorCode, errorMessage);
+});
+  
+testRef.on('value', (snapshot) => {
+worldCounter = snapshot.val();
 });
 
 </script>
