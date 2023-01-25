@@ -48,6 +48,7 @@ testRef.set(worldCounter + counter);
 firebase.auth().onAuthStateChanged((user) => {
 console.log(user);
 testRef = firebase.database().ref('counting');
+start();
 })
 
 firebase.auth().signInAnonymously().catch((error) => {
@@ -56,9 +57,16 @@ var errorMessage = error.message;
 console.log(errorCode, errorMessage);
 });
   
+  
+function start() {
 testRef.on('value', (snapshot) => {
 worldCounter = snapshot.val();
 });
+  
+testRef.on('child_added', (snapshot) => {
+worldCounter = snapshot.val();
+});
+}
 
 </script>
 </body>
