@@ -40,9 +40,8 @@ var counter = 0;
 var worldCounter = 0;
 
 function increase() {
-counter++;
-document.getElementById('counterDisplay').innerHTML = counter;
-testRef.set(worldCounter + counter);
+document.getElementById('counterDisplay').innerHTML = worldCounter;
+testRef.set(worldCounter + 1);
 }
 
 firebase.auth().onAuthStateChanged((user) => {
