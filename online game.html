@@ -48,7 +48,7 @@ firebase.auth().onAuthStateChanged((user) => {
 console.log(user);
 playerId = user.uid;
 playerRef = firebase.database().ref('players/playerId');
-gameRef.set({
+playerRef.set({
 x: 5,
 y: 200
 });
