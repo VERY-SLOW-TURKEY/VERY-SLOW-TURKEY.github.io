@@ -60,19 +60,18 @@ console.log(errorCode, errorMessage);
 function gameLoop() {
 draw();
 move();
+drawPlayers();
 window.requestAnimationFrame(gameLoop);
 }
 
 
 function start() {
 gameRef.on('value', (snapshot) => {
-drawPlayers();
 players.push(snapshot.val());
 console.log(snapshot.val());
 });
   
 gameRef.on('child_added', (snapshot) => {
-drawPlayers();
 console.log(snapshot.val());
 });
 }
