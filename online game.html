@@ -71,6 +71,7 @@ drawPlayers();
   
 gameRef.on('child_added', (snapshot) => {
 players.push(snapshot.val());
+drawPlayers();
 });
 }
 
@@ -80,9 +81,9 @@ c.fillRect(0, 0, window.innerHeight, window.innerWidth);
 }
 
 function drawPlayers() {
-for(i = 0; i < players.length; i += 2) {
+for(i = 0; i < players.length; i++) {
 c.fillStyle = 'grey';
-c.fillRect(players[i].x, players[i + 1].y, 40, 40);
+c.fillRect(players[i].x, players[i].y, 40, 40);
 }
 }
 
