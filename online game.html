@@ -42,11 +42,16 @@ var wDown = false;
 var sDown = false;
 var playerPos = Math.random() * window.innerWidth;
 
+allPlayersRef = firebase.database().ref('players');
+  
 firebase.auth().onAuthStateChanged((user) => {
 console.log(user);
 playerId = user.uid;
-gameRef = firebase.database().ref(playerId);
-gameRef.set(playerPos);
+playerRef = firebase.database().ref('players/${playerId}');
+gameRef.set({
+x: 5,
+y: 200
+});
 start();
 })
   
@@ -57,21 +62,21 @@ console.log(errorCode, errorMessage);
 });
 
 function gameLoop() {
-draw();
-move();
-drawPlayers();
+
 window.requestAnimationFrame(gameLoop);
 }
 
 
 function start() {
-gameRef.on('value', (snapshot) => {
+allPlayersRef.on('value', (snapshot) => {
 players.push(snapshot.val());
 console.log(snapshot.val());
 });
   
-gameRef.on('child_added', (snapshot) => {
-console.log(snapshot.val());
+allPlayersRef.on('child_added', (snapshot) => {
+var newPlayer = snapshot.val();
+c.fillStyle = 'grey';
+c.fillRect(newPlayer.x, newPlayer.y, 40, 40);
 });
 }
 
