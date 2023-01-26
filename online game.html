@@ -78,6 +78,8 @@ var newPlayer = snapshot.val();
 c.fillStyle = 'grey';
 c.fillRect(newPlayer.x, newPlayer.y, 40, 40);
 });
+  
+playerRef.onDisconnect().remove();
 }
 
 function draw() {
@@ -125,8 +127,6 @@ playerPos += 3;
 gameRef.set(playerPos);
 }
 }
-
-playerRef.onDisconnect().remove();  
   
 document.body.appendChild(canvas);
 </script>
