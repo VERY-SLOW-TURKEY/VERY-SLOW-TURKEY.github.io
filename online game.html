@@ -67,11 +67,13 @@ window.requestAnimationFrame(gameLoop);
 function start() {
 gameRef.on('value', (snapshot) => {
 drawPlayers();
+console.log(snapshot.val());
 });
   
 gameRef.on('child_added', (snapshot) => {
 players.push(snapshot.val());
 drawPlayers();
+console.log(snapshot.val());
 });
 }
 
