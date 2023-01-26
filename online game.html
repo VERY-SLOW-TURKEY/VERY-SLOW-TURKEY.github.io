@@ -40,8 +40,7 @@ var aDown = false;
 var dDown = false;
 var wDown = false;
 var sDown = false;
-var playerPos = {x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight
-};
+var playerPos = Math.random() * window.innerWidth;
 
 firebase.auth().onAuthStateChanged((user) => {
 console.log(user);
@@ -84,7 +83,7 @@ c.fillRect(0, 0, window.innerHeight, window.innerWidth);
 function drawPlayers() {
 for(i = 0; i < players.length; i++) {
 c.fillStyle = 'grey';
-c.fillRect(players[i].x, players[i].y, 40, 40);
+c.fillRect(players[i], 40, 40, 40);
 }
 }
 
@@ -104,20 +103,20 @@ if (event.key == 's') {sDown = false;}
 
 function move() {
 if (aDown) {
-playerPos.x -= 3;
+playerPos -= 3;
 gameRef.set(playerPos);
 console.log(playerPos);
 }
 if (dDown) {
-playerPos.x += 3;
+playerPos += 3;
 gameRef.set(playerPos);
 }
 if (wDown) {
-playerPos.y -= 3;
+playerPos -= 3;
 gameRef.set(playerPos);
 }
 if (sDown) {
-playerPos.y += 3;
+playerPos += 3;
 gameRef.set(playerPos);
 }
 }
