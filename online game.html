@@ -71,6 +71,9 @@ window.requestAnimationFrame(gameLoop);
 function start() {
 allPlayersRef.on('value', (snapshot) => {
 players[Object.values(snapshot.val())[0].id] = snapshot.val();
+Objects.keys(players).forEach((key) => {
+console.log(key);
+});
 });
   
 allPlayersRef.on('child_added', (snapshot) => {
@@ -78,7 +81,6 @@ var newPlayer = snapshot.val();
 c.fillStyle = 'grey';
 c.fillRect(newPlayer.x, newPlayer.y, 40, 40);
 players[newPlayer.id] = newPlayer;
-console.log(snapshot.val());
 });
   
 playerRef.onDisconnect().remove();
@@ -114,7 +116,6 @@ function move() {
 if (aDown) {
 playerPos -= 3;
 gameRef.set(playerPos);
-console.log(playerPos);
 }
 if (dDown) {
 playerPos += 3;
