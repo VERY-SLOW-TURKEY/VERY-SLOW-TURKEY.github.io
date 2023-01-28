@@ -72,7 +72,7 @@ function start() {
 allPlayersRef.on('value', (snapshot) => {
 var newPlayer = snapshot.val();
 players[newPlayer.id] = newPlayer;
-console.log(snapshot.val());
+console.log(snapshot.val().id);
 });
   
 allPlayersRef.on('child_added', (snapshot) => {
@@ -80,7 +80,7 @@ var newPlayer = snapshot.val();
 c.fillStyle = 'grey';
 c.fillRect(newPlayer.x, newPlayer.y, 40, 40);
 players[newPlayer.id] = newPlayer;
-console.log(snapshot.val());
+console.log(snapshot.val().id);
 });
   
 playerRef.onDisconnect().remove();
