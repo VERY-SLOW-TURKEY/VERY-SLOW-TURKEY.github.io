@@ -41,7 +41,6 @@ var dDown = false;
 var wDown = false;
 var sDown = false;
 var playerPos = Math.random() * window.innerWidth;
-var test = {};
 
 allPlayersRef = firebase.database().ref('players');
   
@@ -71,10 +70,7 @@ window.requestAnimationFrame(gameLoop);
 
 function start() {
 allPlayersRef.on('value', (snapshot) => {
-var newPlayer = snapshot.val();
-players[newPlayer.id] = newPlayer;
-console.log(Object.values(snapshot.val())[0]);
-test = snapshot.val();
+players[Object.values(snapshot.val())[0].id] = snapshot.val();
 });
   
 allPlayersRef.on('child_added', (snapshot) => {
