@@ -72,7 +72,6 @@ function start() {
 allPlayersRef.on('value', (snapshot) => {
 var newPlayer = snapshot.val();
 players[newPlayer.id] = newPlayer;
-console.log(change);
 });
   
 allPlayersRef.on('child_added', (snapshot) => {
