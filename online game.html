@@ -74,6 +74,8 @@ allPlayersRef.on('value', (snapshot) => {
 //players[Object.values(snapshot.val())[0].id] = snapshot.val();
 Object.keys(players).forEach((key) => {
 console.log(players[key]);
+c.fillStyle = 'white';
+c.fillRect(0, 0, window.innerHeight, window.innerWidth);
 c.fillStyle = 'grey';
 c.fillRect(players[key].x, players[key].y, 40, 40);
 });
@@ -128,12 +130,12 @@ playerRef.set(players[playerId]);
 }
 if (wDown) {
 var newY = players[playerId].y - 3;
-players[playerId].x = newY;
+players[playerId].y = newY;
 playerRef.set(players[playerId]);
 }
 if (sDown) {
 var newY = players[playerId].y + 3;
-players[playerId].x = newY;
+players[playerId].y = newY;
 playerRef.set(players[playerId]);
 }
 }
