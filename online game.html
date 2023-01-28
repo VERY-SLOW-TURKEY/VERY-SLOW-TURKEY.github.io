@@ -41,6 +41,7 @@ var dDown = false;
 var wDown = false;
 var sDown = false;
 var playerPos = Math.random() * window.innerWidth;
+var playerX = 0;
 
 allPlayersRef = firebase.database().ref('players');
   
@@ -73,6 +74,7 @@ allPlayersRef.on('value', (snapshot) => {
 players[Object.values(snapshot.val())[0].id] = snapshot.val();
 Object.keys(players).forEach((key) => {
 console.log(key);
+playerX = players[key].x;
 });
 });
   
