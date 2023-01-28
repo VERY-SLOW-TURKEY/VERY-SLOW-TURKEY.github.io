@@ -70,7 +70,8 @@ window.requestAnimationFrame(gameLoop);
 
 function start() {
 allPlayersRef.on('value', (snapshot) => {
-var change = snapshot.val();
+var newPlayer = snapshot.val();
+players[newPlayer.id] = newPlayer;
 console.log(change);
 });
   
