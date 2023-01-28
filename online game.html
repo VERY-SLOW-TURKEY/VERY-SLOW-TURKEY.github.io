@@ -34,7 +34,7 @@ window.addEventListener('keyup', keyUp);
 window.addEventListener('keydown', keyDown);
 
 // variables
-var players = [];
+var players = {};
 var playerId = '';
 var aDown = false;
 var dDown = false;
@@ -70,7 +70,6 @@ window.requestAnimationFrame(gameLoop);
 
 function start() {
 allPlayersRef.on('value', (snapshot) => {
-players.push(snapshot.val());
 console.log(snapshot);
 });
   
@@ -78,6 +77,7 @@ allPlayersRef.on('child_added', (snapshot) => {
 var newPlayer = snapshot.val();
 c.fillStyle = 'grey';
 c.fillRect(newPlayer.x, newPlayer.y, 40, 40);
+players[newPlayer.id] = newPlayer;
 });
   
 playerRef.onDisconnect().remove();
