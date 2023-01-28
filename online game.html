@@ -71,7 +71,7 @@ window.requestAnimationFrame(gameLoop);
 function start() {
 allPlayersRef.on('value', (snapshot) => {
 var change = snapshot.val();
-players[change.id] = change;
+console.log(change);
 });
   
 allPlayersRef.on('child_added', (snapshot) => {
