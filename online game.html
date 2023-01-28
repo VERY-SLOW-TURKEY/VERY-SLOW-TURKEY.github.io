@@ -70,7 +70,8 @@ window.requestAnimationFrame(gameLoop);
 
 function start() {
 allPlayersRef.on('value', (snapshot) => {
-console.log(snapshot);
+var change = snapshot.val();
+players[change.id] = change;
 });
   
 allPlayersRef.on('child_added', (snapshot) => {
@@ -91,7 +92,7 @@ c.fillRect(0, 0, window.innerHeight, window.innerWidth);
 function drawPlayers() {
 for(i = 0; i < players.length; i++) {
 c.fillStyle = 'grey';
-c.fillRect(players[i], 40, 40, 40);
+c.fillRect(Object.values(players)[i].x, Object.values(players)[i].y, 40, 40);
 }
 }
 
