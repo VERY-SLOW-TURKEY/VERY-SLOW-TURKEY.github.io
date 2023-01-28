@@ -64,7 +64,7 @@ console.log(errorCode, errorMessage);
 });
 
 function gameLoop() {
-
+move();
 window.requestAnimationFrame(gameLoop);
 }
 
@@ -117,20 +117,20 @@ if (event.key == 's') {sDown = false;}
 
 function move() {
 if (aDown) {
-playerPos -= 3;
-gameRef.set(playerPos);
+var newX = players[playerId].x - 3;
+players[playerId].x = newX;
 }
 if (dDown) {
-playerPos += 3;
-gameRef.set(playerPos);
+var newX = players[playerId].x + 3;
+players[playerId].x = newX;
 }
 if (wDown) {
-playerPos -= 3;
-gameRef.set(playerPos);
+var newY = players[playerId].y - 3;
+players[playerId].x = newY;
 }
 if (sDown) {
-playerPos += 3;
-gameRef.set(playerPos);
+var newY = players[playerId].y + 3;
+players[playerId].x = newY;
 }
 }
   
