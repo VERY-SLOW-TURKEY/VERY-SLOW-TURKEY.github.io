@@ -52,6 +52,7 @@ var wDown = false;
 var sDown = false;
 var playerPos = Math.random() * window.innerWidth;
 var playerX = 0;
+var shapes3d = {};
   
 const geometry = new THREE.BoxGeometry( 1, 1, 1 );
 const material = new THREE.MeshBasicMaterial( { color: 0x808080 } );
@@ -93,8 +94,8 @@ Object.keys(players).forEach((key) => {
 console.log(players[key].x);
 c.fillStyle = 'grey';
 c.fillRect(players[key].x, players[key].y, 40, 40);
-players[key].id.position.x = players[key].x;
-players[key].id.position.z = players[key].y;
+shapes3d[players[key].id].position.x = players[key].x;
+shapes3d[players[key].id].position.z = players[key].y;
 });
 });
   
@@ -103,7 +104,7 @@ var newPlayer = snapshot.val();
 c.fillStyle = 'grey';
 c.fillRect(newPlayer.x, newPlayer.y, 40, 40);
 players[newPlayer.id] = newPlayer;
-const newPlayer.id = new THREE.Mesh( geometry, material );
+shapes3d[newPlayer] = new THREE.Mesh( geometry, material );
 });
 
 allPlayersRef.on('child_removed', (snapshot) => {
