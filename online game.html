@@ -72,8 +72,7 @@ window.requestAnimationFrame(gameLoop);
 function start() {
 allPlayersRef.on('value', (snapshot) => {
 //players[Object.values(snapshot.val())[0].id] = snapshot.val();
-players[Object.values(snapshot.val())[0].id].x = Object.values(snapshot.val())[0].x;
-players[Object.values(snapshot.val())[0].id].y = Object.values(snapshot.val())[0].y;
+var players = snapshot.val() || {};
 c.fillStyle = 'white';
 c.fillRect(0, 0, window.innerWidth, window.innerHeight);
 Object.keys(players).forEach((key) => {
