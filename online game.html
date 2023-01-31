@@ -76,7 +76,7 @@ var players = snapshot.val() || {};
 c.fillStyle = 'white';
 c.fillRect(0, 0, window.innerWidth, window.innerHeight);
 Object.keys(players).forEach((key) => {
-console.log(players[key]);
+console.log(players[key].x);
 c.fillStyle = 'grey';
 c.fillRect(players[key].x, players[key].y, 40, 40);
 });
