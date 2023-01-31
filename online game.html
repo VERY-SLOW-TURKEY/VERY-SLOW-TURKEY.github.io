@@ -7,6 +7,8 @@ body {margin:0;}
 </style>
 </head>
 <body>
+<script src="three.js"></script>
+<script src="PointerLockControls.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -28,6 +30,14 @@ var canvas = document.createElement('canvas');
 canvas.height = window.innerHeight / 1.005;
 canvas.width = window.innerWidth / 1.005;
 var c = canvas.getContext('2d');
+  
+// threejs setup code
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+var controls = new THREE.PointerLockControls(camera, document.body);
 
 window.requestAnimationFrame(gameLoop);
 window.addEventListener('keyup', keyUp);
@@ -42,6 +52,9 @@ var wDown = false;
 var sDown = false;
 var playerPos = Math.random() * window.innerWidth;
 var playerX = 0;
+  
+const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+const material = new THREE.MeshBasicMaterial( { color: 0x808080 } );
 
 allPlayersRef = firebase.database().ref('players');
   
@@ -65,6 +78,7 @@ console.log(errorCode, errorMessage);
 
 function gameLoop() {
 move();
+renderer.render(scene, camera);
 window.requestAnimationFrame(gameLoop);
 }
 
@@ -79,6 +93,8 @@ Object.keys(players).forEach((key) => {
 console.log(players[key].x);
 c.fillStyle = 'grey';
 c.fillRect(players[key].x, players[key].y, 40, 40);
+players[key].id.position.x = players[key].x;
+players[key].id.position.z = players[key].y;
 });
 });
   
@@ -87,6 +103,11 @@ var newPlayer = snapshot.val();
 c.fillStyle = 'grey';
 c.fillRect(newPlayer.x, newPlayer.y, 40, 40);
 players[newPlayer.id] = newPlayer;
+const newPlayer.id = new THREE.Mesh( geometry, material );
+});
+
+allPlayersRef.on('child_removed', (snapshot) => {
+scene.remove(snapshot.val().id);
 });
   
 playerRef.onDisconnect().remove();
