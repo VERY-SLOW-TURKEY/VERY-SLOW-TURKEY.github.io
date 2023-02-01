@@ -93,8 +93,8 @@ c.fillRect(0, 0, window.innerWidth, window.innerHeight);
 Object.keys(players).forEach((key) => {
 c.fillStyle = 'grey';
 c.fillRect(players[key].x, players[key].y, 40, 40);
-//shapes3d[players[key].id].position.x = players[key].x;
-//shapes3d[players[key].id].position.z = players[key].y;
+shapes3d[players[key].id].position.x = players[key].x;
+shapes3d[players[key].id].position.z = players[key].y;
 console.log(shapes3d[players[key].id]);
 });
 });
@@ -108,7 +108,7 @@ shapes3d[newPlayer.id] = new THREE.Mesh( geometry, material );
 });
 
 allPlayersRef.on('child_removed', (snapshot) => {
-//scene.remove(snapshot.val().id);
+scene.remove(snapshot.val().id);
 });
   
 playerRef.onDisconnect().remove();
