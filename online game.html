@@ -104,7 +104,7 @@ var newPlayer = snapshot.val();
 c.fillStyle = 'grey';
 c.fillRect(newPlayer.x, newPlayer.y, 40, 40);
 players[newPlayer.id] = newPlayer;
-shapes3d[newPlayer] = new THREE.Mesh( geometry, material );
+shapes3d[newPlayer.id] = new THREE.Mesh( geometry, material );
 });
 
 allPlayersRef.on('child_removed', (snapshot) => {
