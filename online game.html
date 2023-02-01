@@ -38,6 +38,10 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 var controls = new THREE.PointerLockControls(camera, document.body);
+  
+document.onclick = function(event) {
+controls.lock();
+}
 
 window.requestAnimationFrame(gameLoop);
 window.addEventListener('keyup', keyUp);
@@ -76,7 +80,7 @@ var errorCode = error.code;
 var errorMessage = error.message;
 console.log(errorCode, errorMessage);
 });
-
+  
 function gameLoop() {
 move();
 renderer.render(scene, camera);
