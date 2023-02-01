@@ -143,22 +143,22 @@ if (event.key == 's') {sDown = false;}
 
 function move() {
 if (aDown) {
-var newX = players[playerId].x - 3;
+var newX = players[playerId].x - 0.1;
 players[playerId].x = newX;
 playerRef.set(players[playerId]);
 }
 if (dDown) {
-var newX = players[playerId].x + 3;
+var newX = players[playerId].x + 0.1;
 players[playerId].x = newX;
 playerRef.set(players[playerId]);
 }
 if (wDown) {
-var newY = players[playerId].y - 3;
+var newY = players[playerId].y - 0.1;
 players[playerId].y = newY;
 playerRef.set(players[playerId]);
 }
 if (sDown) {
-var newY = players[playerId].y + 3;
+var newY = players[playerId].y + 0.1;
 players[playerId].y = newY;
 playerRef.set(players[playerId]);
 }
