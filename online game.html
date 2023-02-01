@@ -147,24 +147,21 @@ if (event.key == 's') {sDown = false;}
 }
 
 function move() {
+if (aDown || dDown || wDown || sDown) {
 if (aDown) {
-var newX = players[playerId].x - 0.1;
-players[playerId].x = newX;
-playerRef.set(players[playerId]);
+controls.moveRight(-.1);
 }
 if (dDown) {
-var newX = players[playerId].x + 0.1;
-players[playerId].x = newX;
-playerRef.set(players[playerId]);
+controls.moveRight(.1);
 }
 if (wDown) {
-var newY = players[playerId].y - 0.1;
-players[playerId].y = newY;
-playerRef.set(players[playerId]);
+controls.moveForward(.1);
 }
 if (sDown) {
-var newY = players[playerId].y + 0.1;
-players[playerId].y = newY;
+controls.moveForward(-.1);
+}
+players[playerId].y = camera.position.z;
+players[playerId].x = camera.position.x;
 playerRef.set(players[playerId]);
 }
 }
