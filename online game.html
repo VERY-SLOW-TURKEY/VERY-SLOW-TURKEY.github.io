@@ -69,8 +69,8 @@ playerId = user.uid;
 playerRef = firebase.database().ref('players/' + playerId);
 playerRef.set({
 id: playerId,
-x: Math.random() * window.innerWidth,
-y: Math.random() * window.innerHeight
+x: Math.random() * 20,
+y: Math.random() * 20
 });
 start();
 })
