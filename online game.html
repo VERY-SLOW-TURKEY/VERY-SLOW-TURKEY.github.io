@@ -161,6 +161,7 @@ if (wDown) {
 var oldCamera = camera;
 controls.moveForward(.1);
 var cameraDifX = camera.position.x - oldCamera.position.x;
+console.log(cameraDifX);
 var cameraDifY = camera.position.z - oldCamera.position.z;
 var newY = players[playerId].y + cameraDifY;
 var newX = players[playerId].x + cameraDifX;
