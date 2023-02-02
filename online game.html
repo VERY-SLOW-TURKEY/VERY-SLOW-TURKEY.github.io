@@ -158,9 +158,11 @@ players[playerId].x = newX;
 playerRef.set(players[playerId]);
 }
 if (wDown) {
+var oldCamera = camera;
+renderer.render(scene, camera);
 controls.moveForward(.1);
-players[playerId].x = camera.position.x;
-players[playerId].y = camera.position.z;
+players[playerId].x += camera.position.x - oldCamera.position.x;
+players[playerId].y += camera.position.z - oldCamera.position.z;
 playerRef.set(players[playerId]);
 }
 if (sDown) {
