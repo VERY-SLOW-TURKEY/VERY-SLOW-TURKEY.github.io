@@ -99,9 +99,9 @@ c.fillStyle = 'grey';
 c.fillRect(players[key].x, players[key].y, 40, 40);
 shapes3d[players[key].id].position.x = players[key].x;
 shapes3d[players[key].id].position.z = players[key].y;
-camera.position.x = players[key].x;
-camera.position.z = players[key].y;
 });
+camera.position.x = shapes3d[playerId].position.x;
+camera.position.z = shapes3d[playerId].position.z;
 });
   
 allPlayersRef.on('child_added', (snapshot) => {
