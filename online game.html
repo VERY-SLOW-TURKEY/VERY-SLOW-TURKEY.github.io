@@ -158,14 +158,15 @@ players[playerId].x = newX;
 playerRef.set(players[playerId]);
 }
 if (wDown) {
-var oldCamera = camera.position.x;
+var oldCameraX = camera.position.x;
+var oldCameraZ = camera.position.z;
 controls.moveForward(.1);
 renderer.render(scene, camera);
-var newCamera = camera.position.x;
-console.log(newCamera - oldCamera);
-//players[playerId].x += camera.position.x - oldCamera.position.x;
-//players[playerId].y += camera.position.z - oldCamera.position.z;
-//playerRef.set(players[playerId]);
+var newCameraX = camera.position.x;
+var newCameraZ = camera.position.z;
+players[playerId].x += newCameraX - newCameraX;
+players[playerId].y += newCameraZ - newCameraZ;
+playerRef.set(players[playerId]);
 }
 if (sDown) {
 var newY = players[playerId].y + 0.1;
