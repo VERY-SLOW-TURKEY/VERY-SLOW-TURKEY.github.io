@@ -161,6 +161,7 @@ if (wDown) {
 var oldCamera = camera;
 controls.moveForward(.1);
 renderer.render(scene, camera);
+console.log(camera.position.x - oldCamera.position.x);
 players[playerId].x += camera.position.x - oldCamera.position.x;
 players[playerId].y += camera.position.z - oldCamera.position.z;
 playerRef.set(players[playerId]);
