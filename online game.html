@@ -148,13 +148,25 @@ if (event.key == 's') {sDown = false;}
 
 function move() {
 if (aDown) {
-var newX = players[playerId].x + 0.1;
-players[playerId].x = newX;
+var oldCameraX = camera.position.x;
+var oldCameraZ = camera.position.z;
+controls.moveRight(-.1);
+renderer.render(scene, camera);
+var newCameraX = camera.position.x;
+var newCameraZ = camera.position.z;
+players[playerId].x += newCameraX - oldCameraX;
+players[playerId].y += newCameraZ - oldCameraZ;
 playerRef.set(players[playerId]);
 }
 if (dDown) {
-var newX = players[playerId].x - 0.1;
-players[playerId].x = newX;
+var oldCameraX = camera.position.x;
+var oldCameraZ = camera.position.z;
+controls.moveRight(.1);
+renderer.render(scene, camera);
+var newCameraX = camera.position.x;
+var newCameraZ = camera.position.z;
+players[playerId].x += newCameraX - oldCameraX;
+players[playerId].y += newCameraZ - oldCameraZ;
 playerRef.set(players[playerId]);
 }
 if (wDown) {
@@ -169,8 +181,14 @@ players[playerId].y += newCameraZ - oldCameraZ;
 playerRef.set(players[playerId]);
 }
 if (sDown) {
-var newY = players[playerId].y + 0.1;
-players[playerId].y = newY;
+var oldCameraX = camera.position.x;
+var oldCameraZ = camera.position.z;
+controls.moveForward(-.1);
+renderer.render(scene, camera);
+var newCameraX = camera.position.x;
+var newCameraZ = camera.position.z;
+players[playerId].x += newCameraX - oldCameraX;
+players[playerId].y += newCameraZ - oldCameraZ;
 playerRef.set(players[playerId]);
 }
 }
