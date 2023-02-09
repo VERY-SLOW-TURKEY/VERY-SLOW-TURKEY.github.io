@@ -60,6 +60,10 @@ var shapes3d = {};
   
 const geometry = new THREE.BoxGeometry( 1, 1, 1 );
 const material = new THREE.MeshBasicMaterial( { color: 0x808080 } );
+const redMat = new THREE.MeshBasicMaterial( { color: 0x901010 } );
+const wall1 = new THREE.Mesh(geometry, redMat);
+scene.add(wall1);
+wall1.position.set(25, 0, 25);
 
 allPlayersRef = firebase.database().ref('players');
   
