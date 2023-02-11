@@ -88,6 +88,7 @@ console.log(errorCode, errorMessage);
   
 function gameLoop() {
 move();
+checkCollision();
 renderer.render(scene, camera);
 window.requestAnimationFrame(gameLoop);
 }
@@ -275,7 +276,11 @@ geometry:{parameters:{width: mesh.geometry.parameters.width / 2, height: 0, dept
 return bottomMesh;
 }
   
-//function check
+function checkCollision() {
+for(i = 0; i < walls.length; i++) {
+console.log(walls[i]);
+}
+}
   
 document.body.appendChild(canvas);
 </script>
