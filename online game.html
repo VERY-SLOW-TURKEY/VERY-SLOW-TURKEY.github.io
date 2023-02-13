@@ -284,6 +284,21 @@ camera.position.z -= 0.1;
 players[playerId].y = camera.position.z;
 playerRef.set(players[playerId]);
 }
+if (collide(wall, back(shapes3d[playerId]))) {
+camera.position.z += 0.1;
+players[playerId].y = camera.position.z;
+playerRef.set(players[playerId]);
+}
+if (collide(wall, right(shapes3d[playerId]))) {
+camera.position.x -= 0.1;
+players[playerId].x = camera.position.x;
+playerRef.set(players[playerId]);
+}
+if (collide(wall, left(shapes3d[playerId]))) {
+camera.position.x += 0.1;
+players[playerId].x = camera.position.x;
+playerRef.set(players[playerId]);
+}
 }
 }
   
