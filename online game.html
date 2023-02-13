@@ -279,8 +279,10 @@ return bottomMesh;
 function checkCollision() {
 for(i = 0; i < walls.length; i++) {
 var wall = walls[i];
-if (collide(wall, shapes3d[playerId])) {
-console.log('ouch');
+if (collide(wall, front(shapes3d[playerId]))) {
+camera.position.z -= 0.1;
+players[playerId].y = camera.position.z;
+playerRef.set(players[playerId]);
 }
 }
 }
