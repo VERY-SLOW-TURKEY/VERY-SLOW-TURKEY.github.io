@@ -43,7 +43,6 @@ document.onclick = function(event) {
 controls.lock();
 }
 
-window.requestAnimationFrame(gameLoop);
 window.addEventListener('keyup', keyUp);
 window.addEventListener('keydown', keyDown);
 
@@ -124,6 +123,7 @@ scene.remove(snapshot.val().id);
 });
   
 playerRef.onDisconnect().remove();
+window.requestAnimationFrame(gameLoop);
 }
 
 function draw() {
@@ -279,10 +279,9 @@ return bottomMesh;
 function checkCollision() {
 for(i = 0; i < walls.length; i++) {
 var wall = walls[i];
-//if (collide(wall, shapes3d[playerId])) {
-//console.log('ouch');
-//}
-console.log(shapes3d[playerId]);
+if (collide(wall, shapes3d[playerId])) {
+console.log('ouch');
+}
 }
 }
   
