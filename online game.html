@@ -68,7 +68,6 @@ const walls = [wall1];
 allPlayersRef = firebase.database().ref('players');
   
 firebase.auth().onAuthStateChanged((user) => {
-console.log(user);
 playerId = user.uid;
 playerRef = firebase.database().ref('players/' + playerId);
 playerRef.set({
@@ -301,6 +300,8 @@ playerRef.set(players[playerId]);
 }
 }
 }
+  
+console.log('test: 1');
   
 document.body.appendChild(canvas);
 </script>
