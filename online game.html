@@ -59,11 +59,22 @@ var shapes3d = {};
   
 const geometry = new THREE.BoxGeometry( 1, 1, 1 );
 const material = new THREE.MeshBasicMaterial( { color: 0x808080 } );
+const wallGeo1 = new THREE.BoxGeometry( 40, 1, 1 );
 const redMat = new THREE.MeshBasicMaterial( { color: 0x901010 } );
-const wall1 = new THREE.Mesh(geometry, redMat);
+const wall1 = new THREE.Mesh(wallGeo1, redMat);
 scene.add(wall1);
-wall1.position.set(25, 0, 25);
-const walls = [wall1];
+wall1.position.set(0, 0, 20);
+const wall2 = new THREE.Mesh(wallGeo1, redMat);
+scene.add(wall2);
+wall2.position.set(0, 0, -20);
+const wallGeo2 = new THREE.BoxGeometry( 1, 1, 40 );
+const wall3 = new THREE.Mesh(wallGeo2, redMat);
+scene.add(wall3);
+wall3.position.set(20, 0, 0);
+const wall4 = new THREE.Mesh(wallGeo2, redMat);
+scene.add(wall4);
+wall4.position.set(-20, 0, 0);
+const walls = [wall1, wall2, wall3, wall4];
 
 allPlayersRef = firebase.database().ref('players');
   
