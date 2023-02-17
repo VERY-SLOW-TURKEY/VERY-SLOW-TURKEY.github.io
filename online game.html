@@ -56,7 +56,7 @@ var sDown = false;
 var playerPos = Math.random() * window.innerWidth;
 var playerX = 0;
 var shapes3d = {};
-const allColors = [0x808080, 0xff00ff];
+const allColors = [0x808080, 0xff00ff, 0x800000, 0xff0000, 0xffff00, 0x0a0649, 0x808000, 0x00ff00, 0xb97c8a, 0xffa500, 0x00A36C, 0x454B1B, 0x8A9A5B];
   
 const geometry = new THREE.BoxGeometry( 1, 1, 1 );
 const material = new THREE.MeshBasicMaterial( { color: 0x808080 } );
@@ -317,7 +317,7 @@ playerRef.set(players[playerId]);
 }
 }
   
-console.log('test: 9');
+console.log('test: 10');
   
 document.body.appendChild(canvas);
 </script>
