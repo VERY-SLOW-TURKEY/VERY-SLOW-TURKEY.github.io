@@ -128,7 +128,7 @@ c.fillRect(newPlayer.x, newPlayer.y, 40, 40);
 players[newPlayer.id] = newPlayer;
 shapes3d[newPlayer.id] = new THREE.Mesh( geometry, material );
 scene.add(shapes3d[newPlayer.id]);
-shapes3d[newPlayer.id].object.material.color.set( snapshot.val().playerColor );
+shapes3d[newPlayer.id].material.color.set( snapshot.val().playerColor );
 });
 
 allPlayersRef.on('child_removed', (snapshot) => {
