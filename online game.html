@@ -132,7 +132,6 @@ allPlayersRef.on('child_removed', (snapshot) => {
 scene.remove(shapes3d[snapshot.val().id]);
 delete shapes3d[snapshot.val().id];
 delete players[snapshot.val().id];
-console.log(snapshot.val().id);
 });
   
 playerRef.onDisconnect().remove();
