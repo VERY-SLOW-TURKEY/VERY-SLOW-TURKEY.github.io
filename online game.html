@@ -131,7 +131,7 @@ scene.add(shapes3d[newPlayer.id]);
 allPlayersRef.on('child_removed', (snapshot) => {
 scene.remove(snapshot.val().id);
 delete shapes3d[snapshot.val().id];
-//delete players[snapshot.val().id];
+delete players[snapshot.val().id];
 console.log(snapshot.val().id);
 });
   
