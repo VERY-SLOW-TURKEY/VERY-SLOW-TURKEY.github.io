@@ -132,6 +132,7 @@ scene.add(shapes3d[newPlayer.id]);
 allPlayersRef.on('child_removed', (snapshot) => {
 scene.remove(snapshot.val().id);
 delete shapes3d[snapshot.val().id];
+console.log('Player left the game!');
 });
   
 playerRef.onDisconnect().remove();
@@ -314,7 +315,7 @@ playerRef.set(players[playerId]);
 }
 }
   
-console.log('test: 3');
+console.log('test: 4');
   
 document.body.appendChild(canvas);
 </script>
