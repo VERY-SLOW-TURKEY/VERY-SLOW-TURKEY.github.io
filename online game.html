@@ -61,21 +61,22 @@ const allColors = [0xff00ff, 0x800000, 0xff0000, 0xffff00, 0x0a0649, 0x808000, 0
 const geometry = new THREE.BoxGeometry( 1, 1, 1 );
 const material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
 const wallGeo1 = new THREE.BoxGeometry( 40, 2, 1 );
-const greyMat = new THREE.MeshBasicMaterial( { color: 0x808080 } );
+const greyMat = new THREE.MeshBasicMaterial( { color: 0x707070 } );
 const wall1 = new THREE.Mesh(wallGeo1, greyMat);
 scene.add(wall1);
-wall1.position.set(0, 0, 20);
+wall1.position.set(0, 0.5, 20);
 const wall2 = new THREE.Mesh(wallGeo1, greyMat);
 scene.add(wall2);
-wall2.position.set(0, 0, -20);
+wall2.position.set(0, 0.5, -20);
 const wallGeo2 = new THREE.BoxGeometry( 1, 2, 40 );
 const wall3 = new THREE.Mesh(wallGeo2, greyMat);
 scene.add(wall3);
-wall3.position.set(20, 0, 0);
+wall3.position.set(20, 0.5, 0);
 const wall4 = new THREE.Mesh(wallGeo2, greyMat);
 scene.add(wall4);
-wall4.position.set(-20, 0, 0);
+wall4.position.set(-20, 0.5, 0);
 const walls = [wall1, wall2, wall3, wall4];
+scene.background = new THREE.Color(0x808080)
 
 allPlayersRef = firebase.database().ref('players');
   
@@ -317,7 +318,7 @@ playerRef.set(players[playerId]);
 }
 }
   
-console.log('test: 10');
+console.log('test: 11');
   
 document.body.appendChild(canvas);
 </script>
