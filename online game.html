@@ -346,17 +346,17 @@ ballRef.set(ballPos);
 }
 if (collide(you, right(ball))) {
 console.log('right');
-ballPos.x += 0.1;
+ballPos.x += 0.2;
 ballRef.set(ballPos);
 }
 if (collide(you, left(ball))) {
 console.log('left');
-ballPos.x -= 0.1;
+ballPos.x -= 0.2;
 ballRef.set(ballPos);
 }
 }
   
-console.log('test: 13');
+console.log('test: 14');
   
 document.body.appendChild(canvas);
 </script>
