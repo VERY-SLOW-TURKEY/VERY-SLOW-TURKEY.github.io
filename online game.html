@@ -80,7 +80,7 @@ scene.background = new THREE.Color(0x808080)
 const orangeMat = new THREE.MeshBasicMaterial( { color: 0xffa500 } );
 const ball = new THREE.Mesh(geometry, orangeMat);
 scene.add(ball);
-ball.position.set(20, 0, 20);
+ball.position.set(0, 0, 0);
 
 allPlayersRef = firebase.database().ref('players');
   
