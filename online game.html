@@ -57,6 +57,7 @@ var playerPos = Math.random() * window.innerWidth;
 var playerX = 0;
 var shapes3d = {};
 const allColors = [0xff00ff, 0x800000, 0xff0000, 0xffff00, 0x0a0649, 0x808000, 0x00ff00, 0xb97c8a, 0xffa500, 0x00A36C, 0x454B1B, 0x8A9A5B];
+var ballPos = {x: 0, y: 0};
   
 const geometry = new THREE.BoxGeometry( 1, 1, 1 );
 const material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
@@ -141,6 +142,10 @@ allPlayersRef.on('child_removed', (snapshot) => {
 scene.remove(shapes3d[snapshot.val().id]);
 delete shapes3d[snapshot.val().id];
 delete players[snapshot.val().id];
+});
+  
+ballRef.on('value', (snapshot) => {
+console.log(snapshot.val());
 });
   
 playerRef.onDisconnect().remove();
@@ -323,7 +328,7 @@ playerRef.set(players[playerId]);
 }
 }
   
-console.log('test: 11');
+console.log('test: 12');
   
 document.body.appendChild(canvas);
 </script>
