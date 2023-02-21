@@ -335,18 +335,22 @@ playerRef.set(players[playerId]);
 function moveBall() {
 you = shapes3d[playerId];
 if (collide(you, back(ball))) {
+console.log('back');
 ballPos.y += 0.1;
 ballRef.set(ballPos);
 }
 if (collide(you, front(ball))) {
+console.log('front');
 ballPos.y -= 0.1;
 ballRef.set(ballPos);
 }
 if (collide(you, right(ball))) {
+console.log('right');
 ballPos.x += 0.1;
 ballRef.set(ballPos);
 }
 if (collide(you, left(ball))) {
+console.log('left');
 ballPos.x -= 0.1;
 ballRef.set(ballPos);
 }
