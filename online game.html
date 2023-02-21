@@ -107,6 +107,7 @@ console.log(errorCode, errorMessage);
 function gameLoop() {
 move();
 checkCollision();
+moveBall()
 renderer.render(scene, camera);
 window.requestAnimationFrame(gameLoop);
 }
@@ -145,7 +146,10 @@ delete players[snapshot.val().id];
 });
   
 ballRef.on('value', (snapshot) => {
-console.log(snapshot.val());
+ballPos.x = snapshot.val().x;
+ballPos.y = snapshot.val().y;
+ball.position.x = ballPos.x;
+ball.position.z = ballPos.y;
 });
   
 playerRef.onDisconnect().remove();
@@ -325,6 +329,26 @@ camera.position.x += 0.1;
 players[playerId].x = camera.position.x;
 playerRef.set(players[playerId]);
 }
+}
+}
+  
+function moveBall() {
+you = shapes3d[playerId];
+if (collide(you, back(ball))) {
+ballPos.y += 0.1;
+ballRef.set(ballPos);
+}
+if (collide(you, front(ball))) {
+ballPos.y -= 0.1;
+ballRef.set(ballPos);
+}
+if (collide(you, right(ball))) {
+ballPos.x += 0.1;
+ballRef.set(ballPos);
+}
+if (collide(you, left(ball))) {
+ballPos.x -= 0.1;
+ballRef.set(ballPos);
 }
 }
   
