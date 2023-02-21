@@ -77,6 +77,10 @@ scene.add(wall4);
 wall4.position.set(-20, 0.5, 0);
 const walls = [wall1, wall2, wall3, wall4];
 scene.background = new THREE.Color(0x808080)
+const orangeMat = new THREE.MeshBasicMaterial( { color: 0xffa500 } );
+const ball = new THREE.Mesh(geometry, orangeMat);
+scene.add(ball);
+ball.position.set(20, 0, 20);
 
 allPlayersRef = firebase.database().ref('players');
   
@@ -89,6 +93,7 @@ x: Math.random() * 20,
 y: Math.random() * 20,
 playerColor: allColors[Math.floor(Math.random() * allColors.length)]
 });
+ballRef = firebase.database().ref('ball');
 start();
 })
   
