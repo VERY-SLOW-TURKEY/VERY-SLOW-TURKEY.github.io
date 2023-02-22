@@ -333,7 +333,7 @@ playerRef.set(players[playerId]);
 }
 }
   
-function moveBall() {
+function moveBall2() {
 you = shapes3d[playerId];
 if (collide(you, back(ball))) {
 console.log('back');
@@ -347,7 +347,7 @@ ballRef.set(ballPos);
 }
 }
 
-function moveBall2() {
+function moveBall() {
 if (collide(you, right(ball))) {
 console.log('right');
 ballPos.x += 0.1;
@@ -360,7 +360,7 @@ ballRef.set(ballPos);
 }
 }
   
-console.log('test: 15');
+console.log('test: 16');
   
 document.body.appendChild(canvas);
 </script>
