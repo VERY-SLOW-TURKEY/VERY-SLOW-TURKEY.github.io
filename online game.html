@@ -107,7 +107,8 @@ console.log(errorCode, errorMessage);
 function gameLoop() {
 move();
 checkCollision();
-moveBall()
+moveBall();
+moveBall2();
 renderer.render(scene, camera);
 window.requestAnimationFrame(gameLoop);
 }
@@ -344,19 +345,22 @@ console.log('front');
 ballPos.y -= 0.1;
 ballRef.set(ballPos);
 }
+}
+
+function moveBall2() {
 if (collide(you, right(ball))) {
 console.log('right');
-ballPos.x += 0.2;
+ballPos.x += 0.1;
 ballRef.set(ballPos);
 }
 if (collide(you, left(ball))) {
 console.log('left');
-ballPos.x -= 0.2;
+ballPos.x -= 0.1;
 ballRef.set(ballPos);
 }
 }
   
-console.log('test: 14');
+console.log('test: 15');
   
 document.body.appendChild(canvas);
 </script>
