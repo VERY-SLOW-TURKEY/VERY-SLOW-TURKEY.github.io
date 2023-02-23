@@ -333,8 +333,8 @@ playerRef.set(players[playerId]);
 }
 
 function moveBall() {
-if (collide(you, ball)) {
 you = shapes3d[playerId];
+if (collide(you, ball)) {
 if (collide(you, right(ball))) {
 console.log('right');
 ballPos.x += 0.1;
