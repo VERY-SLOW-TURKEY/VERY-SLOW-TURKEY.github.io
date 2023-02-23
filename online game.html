@@ -354,9 +354,25 @@ ballPos.y -= 0.1;
 ballRef.set(ballPos);
 }
 ballLook.position.set(ball.position.x, 0, ball.position.z);
+for(i = 0; i < walls.length; i++) {
+var wall = walls[i];
+if (collide(right(ball), wall)) {
+ballPos.x -= 0.1;
+}
+if (collide(left(ball), wall)) {
+ballPos.x += 0.1;
+}
+if (collide(back(ball), wall)) {
+ballPos.y += 0.1;
+}
+if (collide(front(ball), wall)) {
+ballPos.y -= 0.1;
+}
+ballRef.set(ballPos);
+}
 }
   
-console.log('test: 20');
+console.log('test: 21');
   
 document.body.appendChild(canvas);
 </script>
