@@ -82,6 +82,10 @@ const orangeMat = new THREE.MeshBasicMaterial( { color: 0xffa500 } );
 const ball = new THREE.Mesh(geometry, orangeMat);
 scene.add(ball);
 ball.position.set(0, 0, 0);
+ball.visible = false;
+const sphereGeo = new THREE.SphereGeometry( 0.5, 32, 16 );
+ballLook = new THREE.Mesh(sphereGeo, orangeMat);
+scene.add(ballLook);
 
 allPlayersRef = firebase.database().ref('players');
   
@@ -336,26 +340,23 @@ function moveBall() {
 you = shapes3d[playerId];
 if (collide(you, ball)) {
 if (collide(you, right(ball))) {
-console.log('right');
 ballPos.x -= 0.1;
 }
 if (collide(you, left(ball))) {
-console.log('left');
 ballPos.x += 0.1;
 }
 if (collide(you, back(ball))) {
-console.log('back');
 ballPos.y += 0.1;
 }
 if (collide(you, front(ball))) {
-console.log('front');
 ballPos.y -= 0.1;
 }
 ballRef.set(ballPos);
 }
+ballLook.position.set(ball.position.x, 0, ball.position.z);
 }
   
-console.log('test: 19');
+console.log('test: 20');
   
 document.body.appendChild(canvas);
 </script>
