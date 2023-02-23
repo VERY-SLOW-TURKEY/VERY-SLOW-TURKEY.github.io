@@ -108,7 +108,6 @@ function gameLoop() {
 move();
 checkCollision();
 moveBall();
-moveBall2();
 renderer.render(scene, camera);
 window.requestAnimationFrame(gameLoop);
 }
@@ -332,36 +331,31 @@ playerRef.set(players[playerId]);
 }
 }
 }
-  
-function moveBall2() {
-you = shapes3d[playerId];
-if (collide(you, back(ball))) {
-console.log('back');
-ballPos.y += 0.1;
-ballRef.set(ballPos);
-}
-if (collide(you, front(ball))) {
-console.log('front');
-ballPos.y -= 0.1;
-ballRef.set(ballPos);
-}
-}
 
 function moveBall() {
+if (collide(you, ball)) {
 you = shapes3d[playerId];
 if (collide(you, right(ball))) {
 console.log('right');
 ballPos.x += 0.1;
-ballRef.set(ballPos);
 }
 if (collide(you, left(ball))) {
 console.log('left');
 ballPos.x -= 0.1;
+}
+if (collide(you, back(ball))) {
+console.log('back');
+ballPos.y += 0.1;
+}
+if (collide(you, front(ball))) {
+console.log('front');
+ballPos.y -= 0.1;
+}
 ballRef.set(ballPos);
 }
 }
   
-console.log('test: 16');
+console.log('test: 17');
   
 document.body.appendChild(canvas);
 </script>
