@@ -97,6 +97,7 @@ var planeGeo = new THREE.PlaneGeometry(100, 100, 100, 100);
 var gameFloor = new THREE.Mesh(planeGeo, orangeMat);
 scene.add(gameFloor);
 gameFloor.position.y = -1;
+gameFloor.rotation.x = -90 * Math.PI / 180;
 
 allPlayersRef = firebase.database().ref('players');
   
