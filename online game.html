@@ -157,6 +157,7 @@ ball.position.z = ballPos.y;
 });
   
 playerRef.onDisconnect().remove();
+scene.fog = new THREE.Fog( 0xcccccc, 10, 15 );
 window.requestAnimationFrame(gameLoop);
 }
 
@@ -372,7 +373,7 @@ ballRef.set(ballPos);
 }
 }
   
-console.log('test: 21');
+console.log('test: 22');
   
 document.body.appendChild(canvas);
 </script>
