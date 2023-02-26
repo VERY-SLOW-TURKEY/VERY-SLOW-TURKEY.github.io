@@ -78,7 +78,9 @@ scene.add(wall4);
 wall4.position.set(-20, 0.5, 0);
 const walls = [wall1, wall2, wall3, wall4];
 scene.background = new THREE.Color(0x808080)
-const orangeMat = new THREE.MeshDepthMaterial();
+const orangeMat = new THREE.MeshLambertMaterial({
+color: 0x00ff00
+});
 const ball = new THREE.Mesh(geometry, orangeMat);
 scene.add(ball);
 ball.position.set(0, 0, 0);
@@ -86,6 +88,8 @@ ball.visible = false;
 const sphereGeo = new THREE.SphereGeometry( 0.5, 32, 16 );
 ballLook = new THREE.Mesh(sphereGeo, orangeMat);
 scene.add(ballLook);
+var light = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(light);
 
 allPlayersRef = firebase.database().ref('players');
   
@@ -372,7 +376,7 @@ ballRef.set(ballPos);
 }
 }
   
-console.log('test: 23');
+console.log('test: 24');
   
 document.body.appendChild(canvas);
 </script>
