@@ -93,6 +93,10 @@ var light = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(light);
 var light2 = new THREE.PointLight(0xffffff, 0.5);
 scene.add(light2);
+var planeGeo = new THREE.PlaneGeometry(100, 100, 100, 100);
+var gameFloor = new THREE.Mesh(planeGeo, orangeMat);
+scene.add(gameFloor);
+gameFloor.position.y = -1;
 
 allPlayersRef = firebase.database().ref('players');
   
