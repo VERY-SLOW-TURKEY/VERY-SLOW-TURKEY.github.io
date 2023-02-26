@@ -79,7 +79,11 @@ wall4.position.set(-20, 0.5, 0);
 const walls = [wall1, wall2, wall3, wall4];
 scene.background = new THREE.Color(0x808080)
 const orangeMat = new THREE.MeshLambertMaterial({
-color: 0x00ff00,
+color: 0xFFA500,
+emissive: 0x000000
+});
+const grey2Mat = new THREE.MeshLambertMaterial({
+color: 0x808080,
 emissive: 0x000000
 });
 const ball = new THREE.Mesh(geometry, orangeMat);
@@ -93,9 +97,9 @@ var light = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(light);
 var light2 = new THREE.PointLight(0xffffff, 0.5);
 scene.add(light2);
-light2.position.y = 4;
+light2.position.y = 10;
 var planeGeo = new THREE.PlaneGeometry(100, 100, 100, 100);
-var gameFloor = new THREE.Mesh(planeGeo, orangeMat);
+var gameFloor = new THREE.Mesh(planeGeo, grey2Mat);
 scene.add(gameFloor);
 gameFloor.position.y = -1;
 gameFloor.rotation.x = -90 * Math.PI / 180;
@@ -385,7 +389,7 @@ ballRef.set(ballPos);
 }
 }
   
-console.log('test: 25');
+console.log('test: 26');
   
 document.body.appendChild(canvas);
 </script>
