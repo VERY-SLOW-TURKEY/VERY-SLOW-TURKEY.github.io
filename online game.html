@@ -78,7 +78,7 @@ scene.add(wall4);
 wall4.position.set(-20, 0.5, 0);
 const walls = [wall1, wall2, wall3, wall4];
 scene.background = new THREE.Color(0x808080)
-const orangeMat = new THREE.MeshLambertMaterial( { color: 0xffa500, emissive: 0x000000 } );
+const orangeMat = new THREE.MeshDepthMaterial();
 const ball = new THREE.Mesh(geometry, orangeMat);
 scene.add(ball);
 ball.position.set(0, 0, 0);
