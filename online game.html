@@ -60,24 +60,24 @@ const allColors = [0xff00ff, 0x800000, 0xff0000, 0xffff00, 0x0a0649, 0x808000, 0
 var ballPos = {x: 0, y: 0};
   
 const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-const material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-const wallGeo1 = new THREE.BoxGeometry( 40, 2, 1 );
-const greyMat = new THREE.MeshBasicMaterial( { color: 0x757575 } );
-const grey3Mat = new THREE.MeshLambertMaterial({
-color: 0x757575,
+//const material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
+const material = new THREE.MeshLambertMaterial({
+color: 0xffffff,
 emissive: 0x000000
 });
-const wall1 = new THREE.Mesh(wallGeo1, grey3Mat);
+const wallGeo1 = new THREE.BoxGeometry( 40, 2, 1 );
+const greyMat = new THREE.MeshBasicMaterial( { color: 0x757575 } );
+const wall1 = new THREE.Mesh(wallGeo1, greyMat);
 scene.add(wall1);
 wall1.position.set(0, 0.5, 20);
-const wall2 = new THREE.Mesh(wallGeo1, grey3Mat);
+const wall2 = new THREE.Mesh(wallGeo1, greyMat);
 scene.add(wall2);
 wall2.position.set(0, 0.5, -20);
 const wallGeo2 = new THREE.BoxGeometry( 1, 2, 40 );
-const wall3 = new THREE.Mesh(wallGeo2, grey3Mat);
+const wall3 = new THREE.Mesh(wallGeo2, greyMat);
 scene.add(wall3);
 wall3.position.set(20, 0.5, 0);
-const wall4 = new THREE.Mesh(wallGeo2, grey3Mat);
+const wall4 = new THREE.Mesh(wallGeo2, greyMat);
 scene.add(wall4);
 wall4.position.set(-20, 0.5, 0);
 const walls = [wall1, wall2, wall3, wall4];
@@ -101,7 +101,7 @@ var light = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(light);
 var light2 = new THREE.PointLight(0xffffff, 0.5);
 scene.add(light2);
-light2.position.y = 25;
+light2.position.y = 10;
 var planeGeo = new THREE.PlaneGeometry(100, 100, 100, 100);
 var gameFloor = new THREE.Mesh(planeGeo, grey2Mat);
 scene.add(gameFloor);
@@ -393,7 +393,7 @@ ballRef.set(ballPos);
 }
 }
   
-console.log('test: 27');
+console.log('test: 28');
   
 document.body.appendChild(canvas);
 </script>
