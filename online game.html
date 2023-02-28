@@ -198,6 +198,7 @@ if (event.key == 'a') {aDown = true;}
 if (event.key == 'd') {dDown = true;}
 if (event.key == 'w') {wDown = true;}
 if (event.key == 's') {sDown = true;}
+if (event.key == 'f') {document.documentElement.requestFullscreen();}
 }
 
 function keyUp(event) {
@@ -393,7 +394,11 @@ ballRef.set(ballPos);
 }
 }
   
-console.log('test: 28');
+window.onresize = function() {
+renderer.setSize(window.innerWidth, window.innerHeight);
+camera.aspect = window.innerWidth / window.innerHeight;
+camera.updateProjectionMatrix();
+}
   
 document.body.appendChild(canvas);
 </script>
