@@ -42,7 +42,7 @@ var chatString = '';
 
 function enterRoom() {
 room = document.getElementById('roomSelector').value;
-var roomRef = firebase.database().ref(room);
+roomRef = firebase.database().ref(room);
 document.getElementById('chats').innerHTML = '';
 }
 
