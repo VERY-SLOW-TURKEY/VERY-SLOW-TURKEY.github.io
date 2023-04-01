@@ -44,11 +44,11 @@ var roomRef = firebase.database().ref(room);
 }
 
 function sendChat() {
-chatCode = Math.random();
+chatCode = Math.random() * 100000000000000000;
 var chat = firebase.database().ref(room + '/' + chatCode.toString());
 chat.set(document.getElementById('chatText').value);
 }
 
-console.log('test 2');
+console.log('test 3');
 
 </script>
