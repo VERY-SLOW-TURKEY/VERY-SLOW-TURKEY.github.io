@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <title>Online Game</title>
@@ -14,6 +14,8 @@ body {margin:0;}
 <input type="text" id="chatText" placeHolder="Send A Message">
 <button onclick="sendChat()">Enter</button>
 
+<p id="chats"></p>
+  
 <script src="three.js"></script>
 <script src="PointerLockControls.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -48,6 +50,14 @@ chatCode = Math.random() * 100000000000000000;
 var chat = firebase.database().ref(room + '/' + chatCode.toString());
 chat.set(document.getElementById('chatText').value);
 }
+  
+roomRef.on('value', (snapshot) => {
+document.getElementById('chats').innerHTML = snapshot.val();
+});
+
+roomRef.on('child_added', (snapshot) => {
+document.getElementById('chats').innerHTML = snapshot.val();
+});
 
 console.log('test 3');
 
