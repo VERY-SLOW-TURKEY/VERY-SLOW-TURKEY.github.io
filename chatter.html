@@ -46,7 +46,7 @@ var roomRef = firebase.database().ref(room);
 function sendChat() {
 chatCode = Math.random();
 var chat = firebase.database().ref(room + '/' + chatCode.toString());
-chat.set(document.getElementById('chatText').value;);
+chat.set(document.getElementById('chatText').value);
 }
 
 console.log('test 1');
