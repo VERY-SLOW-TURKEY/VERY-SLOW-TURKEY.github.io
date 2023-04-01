@@ -38,7 +38,7 @@ const app = firebase.initializeApp(firebaseConfig);
 // variables
 var room = 'general';
 var roomRef = firebase.database().ref(room);
-
+var dataTest = {};
 
 function enterRoom() {
 room = document.getElementById('roomSelector').value;
@@ -59,8 +59,9 @@ console.log(snapshot.val());
 roomRef.on('child_added', (snapshot) => {
 document.getElementById('chats').innerHTML = snapshot.val();
 console.log(snapshot.val());
+dataTest = snapshot.val();
 });
 
-console.log('test 5');
+console.log('test 6');
 
 </script>
