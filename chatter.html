@@ -51,11 +51,13 @@ chat.set(document.getElementById('chatText').value);
 }
   
 roomRef.on('value', (snapshot) => {
+var chat = {};
 var chat = snapshot.val();
 document.getElementById('chats').innerHTML = chat;
 });
 
 roomRef.on('child_added', (snapshot) => {
+var chat = {};
 var chat = snapshot.val();
 document.getElementById('chats').innerHTML = chat;
 });
