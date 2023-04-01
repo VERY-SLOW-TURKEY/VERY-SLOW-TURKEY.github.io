@@ -54,15 +54,15 @@ chat.set(document.getElementById('chatText').value);
 roomRef.on('value', (snapshot) => {
 var chat = snapshot.val() || {};
 chat = chat[Object.keys(chat)[0]];
-document.getElementById('chats').innerHTML = document.getElementById('chats').innerHTML + chat;
+document.getElementById('chats').innerHTML = document.getElementById('chats').innerHTML + '<br>' + chat;
 });
 
 roomRef.on('child_added', (snapshot) => {
 var chat = snapshot.val() || {};
 chat = chat[Object.keys(chat)[0]];
-document.getElementById('chats').innerHTML = document.getElementById('chats').innerHTML + chat;
+document.getElementById('chats').innerHTML = document.getElementById('chats').innerHTML + '<br>' + chat;
 });
 
-console.log('test 9');
+console.log('test 10');
 
 </script>
