@@ -47,7 +47,7 @@ document.getElementById('chats').innerHTML = '';
 }
 
 function sendChat() {
-chatCode = Math.random() * 100000000000000000;
+chatCode = Math.random() * 10000000000000000000;
 var chat = firebase.database().ref(room + '/' + chatCode.toString());
 chat.set(document.getElementById('chatText').value);
 }
