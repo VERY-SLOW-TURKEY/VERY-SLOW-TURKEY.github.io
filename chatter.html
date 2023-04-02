@@ -60,11 +60,12 @@ chat.set(document.getElementById('chatText').value);
 //});
 
 roomRef.on('child_added', (snapshot) => {
+console.log('New chat.');
 var chat = snapshot.val() || {};
 chatString = chatString + '<br>' + chat;
 document.getElementById('chats').innerHTML = chatString;
 });
 
-console.log('test 13');
+console.log('test 14');
 
 </script>
