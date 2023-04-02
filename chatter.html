@@ -52,24 +52,16 @@ var chat = firebase.database().ref(room + '/' + chatCode.toString());
 chat.set(document.getElementById('chatText').value);
 }
   
-//roomRef.on('value', (snapshot) => {
-//var chat = snapshot.val() || {};
-//chat = chat[Object.keys(chat)[0]];
-//chatString = chatString + '<br>' + chat;
-//document.getElementById('chats').innerHTML = chatString;
-//});
+roomRef.on('value', (snapshot) => {
+console.log('hi');
+});
 
-function addChat() {
 roomRef.on('child_added', (snapshot) => {
 console.log('New chat.');
 var chat = snapshot.val() || {};
 chatString = chatString + '<br>' + chat;
 document.getElementById('chats').innerHTML = chatString;
 });
-setTimeout(addChat(), 1000);
-}
 
 console.log('test 16');
-window.requestAnimationFrame(addChat());
-
 </script>
