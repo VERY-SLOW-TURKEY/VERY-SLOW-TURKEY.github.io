@@ -59,13 +59,17 @@ chat.set(document.getElementById('chatText').value);
 //document.getElementById('chats').innerHTML = chatString;
 //});
 
+function addChat() {
 roomRef.on('child_added', (snapshot) => {
 console.log('New chat.');
 var chat = snapshot.val() || {};
 chatString = chatString + '<br>' + chat;
 document.getElementById('chats').innerHTML = chatString;
 });
+window.requestAnimationFrame(addChat());
+}
 
-console.log('test 15');
+console.log('test 16');
+window.requestAnimationFrame(addChat());
 
 </script>
