@@ -66,7 +66,7 @@ var chat = snapshot.val() || {};
 chatString = chatString + '<br>' + chat;
 document.getElementById('chats').innerHTML = chatString;
 });
-window.requestAnimationFrame(addChat());
+setTimeout(addChat(), 1000);
 }
 
 console.log('test 16');
