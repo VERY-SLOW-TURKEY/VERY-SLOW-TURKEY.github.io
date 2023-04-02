@@ -43,7 +43,7 @@ var chatString = '';
 function enterRoom() {
 room = document.getElementById('roomSelector').value;
 roomRef = firebase.database().ref(room);
-document.getElementById('chats').innerHTML = '';
+chatString = '';
 }
 
 function sendChat() {
@@ -66,6 +66,6 @@ chatString = chatString + '<br>' + chat;
 document.getElementById('chats').innerHTML = chatString;
 });
 
-console.log('test 14');
+console.log('test 15');
 
 </script>
