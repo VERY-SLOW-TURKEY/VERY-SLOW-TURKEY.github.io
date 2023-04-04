@@ -9,10 +9,10 @@ body {margin:0;}
 <body>
 
 <input type="text" id="roomSelector" placeHolder="Enter Or Create A Room">
-<button onclick="enterRoom()">Enter</button>
+<button onclick="enterRoom()" id="roomSelectorButton">Enter</button>
 
 <input type="text" id="chatText" placeHolder="Send A Message">
-<button onclick="sendChat()">Enter</button>
+<button onclick="sendChat()" id="chatTextButton">Enter</button>
 
 <p id="chats"></p>
   
@@ -22,6 +22,8 @@ body {margin:0;}
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
+document.getElementById('chatText').hidden = true;
+document.getElementById('chatTextButton').hidden = true;
 const firebaseConfig = {
 apiKey: "AIzaSyB6Ocget3hz66FmLY-Vi9N-LvenvEJILt0",
 authDomain: "chatter-e5b3a.firebaseapp.com",
@@ -44,6 +46,11 @@ function enterRoom() {
 room = document.getElementById('roomSelector').value;
 roomRef = firebase.database().ref(room);
 chatString = '';
+document.getElementById('roomSelector').hidden = true;
+document.getElementById('roomSelectorButton').hidden = true;
+document.getElementById('chatText').hidden = false;
+document.getElementById('chatTextButton').hidden = false;
+showChats();
 }
 
 function sendChat() {
@@ -52,16 +59,18 @@ var chat = firebase.database().ref(room + '/' + chatCode.toString());
 chat.set(document.getElementById('chatText').value);
 }
   
-roomRef.on('value', (snapshot) => {
-console.log('hi');
-});
+//roomRef.on('value', (snapshot) => {
+//console.log('hi');
+//});
 
+function showChats() {
 roomRef.on('child_added', (snapshot) => {
 console.log('New chat.');
 var chat = snapshot.val() || {};
 chatString = chatString + '<br>' + chat;
 document.getElementById('chats').innerHTML = chatString;
 });
+}
 
-console.log('test 17');
+console.log('test 18');
 </script>
