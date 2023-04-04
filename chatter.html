@@ -57,10 +57,36 @@ color: white;
 padding-bottom: 2vw;
 }
   
+#topBar {
+position: fixed;
+padding-left: 50vw;
+padding-right: 50vw;
+top: 0%;
+right: 0vw;
+color: white;
+background-color: black;
+padding-top: 1vw;
+padding-bottom: 1vw;
+}
+
+#newRoomButton {
+position: fixed;
+top: 6%;
+left: 1%;
+z-index: 1;
+color: white;
+background-color: black;
+font-size: 2vw;
+text-decoration: none;
+}
+  
 </style>
 </head>
 <body>
 
+<a hidden id="newRoomButton" href="https://very-slow-turkey.github.io/chatter.html">< Change Room</a>
+<h1 id="topBar">General</h1>
+  
 <input type="text" id="roomSelector" placeHolder="Enter Or Create A Room">
 <button onclick="enterRoom()" id="roomSelectorButton">Enter</button>
 
@@ -101,6 +127,8 @@ document.getElementById('roomSelector').hidden = true;
 document.getElementById('roomSelectorButton').hidden = true;
 document.getElementById('chatText').hidden = false;
 document.getElementById('chatTextButton').hidden = false;
+document.getElementById('newRoomButton').hidden = false;
+document.getElementById('topBar').innerHTML = room;
 showChats();
 }
 
