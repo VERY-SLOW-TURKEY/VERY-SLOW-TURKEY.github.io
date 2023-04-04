@@ -11,8 +11,8 @@ body {margin:0;}
 <input type="text" id="roomSelector" placeHolder="Enter Or Create A Room">
 <button onclick="enterRoom()" id="roomSelectorButton">Enter</button>
 
-<input type="text" id="chatText" placeHolder="Send A Message">
-<button onclick="sendChat()" id="chatTextButton">Enter</button>
+<input hidden type="text" id="chatText" placeHolder="Send A Message">
+<button hidden onclick="sendChat()" id="chatTextButton">Enter</button>
 
 <p id="chats"></p>
   
@@ -22,8 +22,6 @@ body {margin:0;}
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
-document.getElementById('chatText').hidden = true;
-document.getElementById('chatTextButton').hidden = true;
 const firebaseConfig = {
 apiKey: "AIzaSyB6Ocget3hz66FmLY-Vi9N-LvenvEJILt0",
 authDomain: "chatter-e5b3a.firebaseapp.com",
