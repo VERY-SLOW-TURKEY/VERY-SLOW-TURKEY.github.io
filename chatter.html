@@ -134,8 +134,10 @@ showChats();
 }
 
 function sendChat() {
+const d = new Date();
 chatCode = Math.random() * 10000000000000000000;
-var chat = firebase.database().ref(room + '/' + chatCode.toString());
+chatCode = d.getTime().toString() + chatCode.toString();
+var chat = firebase.database().ref(room + '/' + chatCode);
 chat.set(document.getElementById('chatText').value);
 }
   
