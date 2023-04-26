@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Online Fight</title>
+<style>
+body { margin:0; }
+</style>
+</head>
+<body>
+<script src="three.js"></script>
+<script src="PointerLockControls.js"></script>
+<script src="GLTFLoader.js"></script>
+<script>
+
+// variables
+var aDown = false;
+var dDown = false;
+var wDown = false;
+var sDown = false;
+
+window.addEventListener('keyup', keyUp);
+window.addEventListener('keydown', keyDown);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+var controls = new THREE.PointerLockControls(camera, document.body);
+
+document.onclick = function(event) {
+controls.lock();
+}
+
+function gameLoop() {
+renderer.render(scene, camera);
+move();
+requestAnimationFrame(gameLoop);
+}
+gameLoop();
+
+function keyDown(event) {
+const k = event.key;
+if (k == 'a') {aDown = true;}
+if (k == 'd') {dDown = true;}
+if (k == 'w') {wDown = true;}
+if (k == 's') {sDown = true;}
+if (k == ' ') {camera.position.y += 0.1;}
+}
+
+function keyUp(event) {
+const k = event.key;
+if (k == 'a') {aDown = false;}
+if (k == 'd') {dDown = false;}
+if (k == 'w') {wDown = false;}
+if (k == 's') {sDown = false;}
+}
+
+function move() {
+if (wDown) {controls.moveForward(.1);}
+if (sDown) {controls.moveForward(-.1);}
+if (aDown) {controls.moveRight(-.1);}
+if (dDown) {controls.moveRight(.1);}
+}
+
+const gltfLoader = new THREE.GLTFLoader();
+gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
+test.scene.add(gltfScene.scene);
+});
+
+// credits
+// "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+</script>
+</body>
+</html>
