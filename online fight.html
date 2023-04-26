@@ -62,11 +62,17 @@ if (aDown) {controls.moveRight(-.1);}
 if (dDown) {controls.moveRight(.1);}
 }
 
-const gltfLoader = new THREE.GLTFLoader();
-gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
-gltfScene.scene.scale.set(10, 10, 10);
-scene.add(gltfScene.scene);
-});
+    let loadedModel;
+    const glftLoader = new GLTFLoader();
+    glftLoader.load('./swat/scene.gltf', (gltfScene) => {
+      loadedModel = gltfScene;
+      console.log(loadedModel);
+
+      gltfScene.scene.rotation.y = Math.PI / 8;
+      gltfScene.scene.position.y = 3;
+      gltfScene.scene.scale.set(10, 10, 10);
+      scene.add(gltfScene.scene);
+    });
 
 const cubeGeo = new THREE.BoxGeometry(1, 1, 1);
 const blueMat = new THREE.MeshBasicMaterial({color: 0x0000ff});
