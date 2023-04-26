@@ -64,8 +64,14 @@ if (dDown) {controls.moveRight(.1);}
 
 const gltfLoader = new THREE.GLTFLoader();
 gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
-test.scene.add(gltfScene.scene);
+scene.add(gltfScene.scene);
 });
+
+const cubeGeo = new THREE.BoxGeometry(1, 1, 1);
+const blueMat = new THREE.MeshBasicMaterial({color: 0x0000ff});
+const cube = new THREE.Mesh(cubeGeo, blueMat);
+scene.add(cube);
+scene.position.x = 5;
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
