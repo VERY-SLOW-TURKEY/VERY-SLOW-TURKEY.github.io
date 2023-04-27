@@ -66,6 +66,7 @@ const gltfLoader = new THREE.GLTFLoader();
 gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
   console.log(gltfScene.scene);
   scene.add(gltfScene.scene)
+  gltfScene.scene.scale.set(0.01, 0.01, 0.01);
 });
   
 const light = new THREE.DirectionalLight(0xffffff, 1);
@@ -79,7 +80,7 @@ scene.add(cube);
 cube.position.x = 5;
   
   
-console.log('test 1');
+console.log('test 2');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
