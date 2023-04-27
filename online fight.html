@@ -40,7 +40,10 @@ gameLoop();
 
 function keyDown(event) {
 const k = event.key;
-if (k == 'a') {aDown = true;}
+if (k == 'a') {aDown = true; const gltfLoader = new THREE.GLTFLoader();
+gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
+  console.log('yay');
+});}
 if (k == 'd') {dDown = true;}
 if (k == 'w') {wDown = true;}
 if (k == 's') {sDown = true;}
@@ -62,10 +65,7 @@ if (aDown) {controls.moveRight(-.1);}
 if (dDown) {controls.moveRight(.1);}
 }
 
-const gltfLoader = new THREE.GLTFLoader();
-gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
-  console.log('yay');
-});
+
 
 const cubeGeo = new THREE.BoxGeometry(1, 1, 1);
 const blueMat = new THREE.MeshBasicMaterial({color: 0x0000ff});
