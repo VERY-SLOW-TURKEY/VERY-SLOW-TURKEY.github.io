@@ -64,7 +64,7 @@ if (dDown) {controls.moveRight(.1);}
 
 const gltfLoader = new THREE.GLTFLoader();
 gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
-  console.log(gltfScene);
+  console.log(gltfScene.scene);
   scene.add(gltfScene.scene)
 });
 
