@@ -67,6 +67,10 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
   console.log(gltfScene.scene);
   scene.add(gltfScene.scene)
 });
+  
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(2, 2, 5);
+scene.add(light);
 
 const cubeGeo = new THREE.BoxGeometry(1, 1, 1);
 const blueMat = new THREE.MeshBasicMaterial({color: 0x0000ff});
