@@ -64,8 +64,7 @@ if (dDown) {controls.moveRight(.1);}
 
 const gltfLoader = new THREE.GLTFLoader();
 gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
-  console.log('yay');
-  scene.add(gltfScene);
+  console.log(gltfScene);
 });
 
 const cubeGeo = new THREE.BoxGeometry(1, 1, 1);
