@@ -67,7 +67,7 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
   console.log(gltfScene.scene);
   scene.add(gltfScene.scene)
   gltfScene.scene.scale.set(0.01, 0.01, 0.01);
-  gltfScene.scene.position.y = 0;
+  gltfScene.scene.position.y = -1;
 });
   
 const light = new THREE.DirectionalLight(0xffffff, 1);
