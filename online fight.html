@@ -17,7 +17,6 @@ var aDown = false;
 var dDown = false;
 var wDown = false;
 var sDown = false;
-var testCopy;
 
 window.addEventListener('keyup', keyUp);
 window.addEventListener('keydown', keyDown);
@@ -77,7 +76,6 @@ if (k == 'd') {dDown = true;}
 if (k == 'w') {wDown = true;}
 if (k == 's') {sDown = true;}
 if (k == ' ') {camera.position.y += 0.1;}
-if (k == 'b') {navigator.clipboard.writeText(testCopy);}
 }
 
 function keyUp(event) {
