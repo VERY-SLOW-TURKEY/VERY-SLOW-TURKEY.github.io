@@ -36,9 +36,11 @@ light.castShadow = true;
 const ambLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambLight);
 const sandFloorGeo = new THREE.PlaneGeometry(100, 100);
+const sandTexture = new THREE.TextureLoader().load('./sand.jpg');
 const sandMat = new THREE.MeshLambertMaterial({
 color: 0xd2aa6d,
 emissive: 0x000000
+map: sandTexture
 });
 const sandFloor = new THREE.Mesh(sandFloorGeo, sandMat);
 scene.add(sandFloor);
