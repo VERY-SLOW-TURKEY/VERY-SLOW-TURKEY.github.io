@@ -17,6 +17,7 @@ var aDown = false;
 var dDown = false;
 var wDown = false;
 var sDown = false;
+var testCopy;
 
 window.addEventListener('keyup', keyUp);
 window.addEventListener('keydown', keyDown);
@@ -76,6 +77,7 @@ if (k == 'd') {dDown = true;}
 if (k == 'w') {wDown = true;}
 if (k == 's') {sDown = true;}
 if (k == ' ') {camera.position.y += 0.1;}
+if (k == 'b') {navigator.clipboard.writeText(testCopy);}
 }
 
 function keyUp(event) {
@@ -95,11 +97,10 @@ if (dDown) {controls.moveRight(.1);}
 
 const gltfLoader = new THREE.GLTFLoader();
 gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
-  console.log(gltfScene.scene);
   scene.add(gltfScene.scene);
   gltfScene.scene.scale.set(0.01, 0.01, 0.01);
   gltfScene.scene.position.y = -1;
-  navigator.clipboard.writeText(gltfScene.scene);
+  testCopy = gltfScene.scene;
 });
   
 console.log('test 3');
