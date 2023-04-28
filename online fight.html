@@ -39,7 +39,7 @@ const sandFloorGeo = new THREE.PlaneGeometry(100, 100);
 const sandTexture = new THREE.TextureLoader().load('./sand.jpg');
 const sandMat = new THREE.MeshLambertMaterial({
 color: 0xd2aa6d,
-emissive: 0x000000
+emissive: 0x000000,
 map: sandTexture
 });
 const sandFloor = new THREE.Mesh(sandFloorGeo, sandMat);
@@ -108,7 +108,7 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene2) => {
   gltfScene2.scene.position.set(5, -1, 5);
 });
   
-console.log('test 4');
+console.log('test 5');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
