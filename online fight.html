@@ -98,10 +98,15 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
   scene.add(gltfScene.scene);
   gltfScene.scene.scale.set(0.01, 0.01, 0.01);
   gltfScene.scene.position.y = -1;
-  testCopy = gltfScene.scene;
 });
   
-console.log('test 3');
+gltfLoader.load('./swat/scene.gltf', (gltfScene2) => {
+  scene.add(gltfScene2.scene);
+  gltfScene2.scene.scale.set(0.01, 0.01, 0.01);
+  gltfScene2.scene.position.set(5, -1, 5);
+});
+  
+console.log('test 4');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
