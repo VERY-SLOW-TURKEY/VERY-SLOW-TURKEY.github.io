@@ -3,10 +3,20 @@
 <head>
 <title>Online Fight</title>
 <style>
-body { margin:0; }
+body {
+margin:0;
+background-image: url('sand.jpg');
+}
+#loading {
+position: fixed;
+top: 75%;
+text-align: center;
+font-size: 400%;
+}
 </style>
 </head>
 <body>
+<p id="loading">Loading...</p>
 <script src="three.js"></script>
 <script src="PointerLockControls.js"></script>
 <script src="GLTFLoader.js"></script>
@@ -17,6 +27,7 @@ var aDown = false;
 var dDown = false;
 var wDown = false;
 var sDown = false;
+var gameLoaded = false;
 
 window.addEventListener('keyup', keyUp);
 window.addEventListener('keydown', keyDown);
@@ -65,7 +76,9 @@ controls.lock();
 }
 
 function gameLoop() {
+if (gameLoaded) {
 renderer.render(scene, camera);
+}
 move();
 requestAnimationFrame(gameLoop);
 }
@@ -100,6 +113,8 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
   scene.add(gltfScene.scene);
   gltfScene.scene.scale.set(0.01, 0.01, 0.01);
   gltfScene.scene.position.y = -1;
+  document.getElementById("loading").hidden = true;
+  gameLoaded = true;
 });
   
 gltfLoader.load('./swat/scene.gltf', (gltfScene2) => {
@@ -108,7 +123,7 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene2) => {
   gltfScene2.scene.position.set(5, -1, 5);
 });
   
-console.log('test 5');
+console.log('test 6');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
