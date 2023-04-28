@@ -26,6 +26,37 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 var controls = new THREE.PointerLockControls(camera, document.body);
+renderer.shadowMap.enabled = true;
+
+// level
+const light = new THREE.PointLight(0xffffff, 3);
+light.position.set(0, 10, 0);
+scene.add(light);
+light.castShadow = true;
+const ambLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambLight);
+const sandFloorGeo = new THREE.PlaneGeometry(100, 100);
+const sandMat = new THREE.MeshLambertMaterial({
+color: 0xd2aa6d,
+emissive: 0x000000
+});
+const sandFloor = new THREE.Mesh(sandFloorGeo, sandMat);
+scene.add(sandFloor);
+sandFloor.rotation.x = Math.PI * 1.5;
+sandFloor.position.y = -1;
+sandFloor.receiveShadow = true;
+sandFloor.castShadow = true;
+const cubeGeo = new THREE.BoxGeometry(1, 1, 1);
+const blueMat = new THREE.MeshLambertMaterial({
+color: 0x0000ff,
+emissive: 0x000000
+});
+const cube = new THREE.Mesh(cubeGeo, blueMat);
+scene.add(cube);
+cube.castShadow = true;
+cube.receiveShadow = true;
+cube.position.x = 5;
+cube.rotation.y = Math.PI / 4;
 
 document.onclick = function(event) {
 controls.lock();
@@ -69,17 +100,6 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
   gltfScene.scene.scale.set(0.01, 0.01, 0.01);
   gltfScene.scene.position.y = -1;
 });
-  
-const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(2, 2, 5);
-scene.add(light);
-
-const cubeGeo = new THREE.BoxGeometry(1, 1, 1);
-const blueMat = new THREE.MeshBasicMaterial({color: 0x0000ff});
-const cube = new THREE.Mesh(cubeGeo, blueMat);
-scene.add(cube);
-cube.position.x = 5;
-  
   
 console.log('test 2');
 
