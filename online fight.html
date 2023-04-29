@@ -38,11 +38,34 @@ appId: "1:223694414798:web:d1b37aa22987e24961c19f"
 const app = firebase.initializeApp(firebaseConfig);
 
 // variables
+var players = {};
+var playerId = '';
+var shapes3d = {};
 var aDown = false;
 var dDown = false;
 var wDown = false;
 var sDown = false;
 var gameLoaded = false;
+  
+allPlayersRef = firebase.database().ref('players');
+  
+firebase.auth().signInAnonymously().catch((error) => {
+var errorCode = error.code;
+var errorMessage = error.message;
+console.log(errorCode, errorMessage);
+});
+  
+firebase.auth().onAuthStateChanged((user) => {
+playerId = user.uid;
+playerRef = firebase.database().ref('players/' + playerId);
+playerRef.set({
+id: playerId,
+x: Math.random() * 20,
+y: 0,
+z: Math.random() * 20
+});
+start();
+})
 
 window.addEventListener('keyup', keyUp);
 window.addEventListener('keydown', keyDown);
@@ -139,13 +162,44 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene2) => {
   gltfScene2.scene.position.set(5, -1, 5);
 });
   
+function start() {
+allPlayersRef.on('value', (snapshot) => {
+var players = snapshot.val() || {};
+Object.keys(players).forEach((key) => {
+shapes3d[players[key].id].position.x = players[key].x;
+shapes3d[players[key].id].position.z = players[key].z;
+shapes3d[players[key].id].position.y = players[key].y;
+});
+camera.position.x = shapes3d[playerId].position.x;
+camera.position.z = shapes3d[playerId].position.z;
+camera.position.z = shapes3d[playerId].position.y;
+});
+  
+allPlayersRef.on('child_added', (snapshot) => {
+var newPlayer = snapshot.val();
+players[newPlayer.id] = newPlayer;
+gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
+  gltfScene.scene.scale.set(0.01, 0.01, 0.01);
+  shapes3d[newPlayer.id] = gltfScene.scene;
+});
+scene.add(shapes3d[newPlayer.id]);
+});
+
+allPlayersRef.on('child_removed', (snapshot) => {
+scene.remove(shapes3d[snapshot.val().id]);
+delete shapes3d[snapshot.val().id];
+delete players[snapshot.val().id];
+});
+playerRef.onDisconnect().remove();
+}
+  
 window.onresize = function() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 }
   
-console.log('test 7');
+console.log('test 8');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
