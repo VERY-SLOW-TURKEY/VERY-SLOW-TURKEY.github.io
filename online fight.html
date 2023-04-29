@@ -41,6 +41,7 @@ const app = firebase.initializeApp(firebaseConfig);
 var players = {};
 var playerId = '';
 var shapes3d = {};
+var models3d = {};
 var aDown = false;
 var dDown = false;
 var wDown = false;
@@ -115,6 +116,7 @@ controls.lock();
 function gameLoop() {
 if (gameLoaded) {
 renderer.render(scene, camera);
+moveModel();
 }
 move();
 requestAnimationFrame(gameLoop);
@@ -190,13 +192,30 @@ delete players[snapshot.val().id];
 playerRef.onDisconnect().remove();
 }
   
+function moveModel() {
+if (Object.keys(shapes3d).length - models3d.length > 0) {
+gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
+  scene.add(gltfScene.scene);
+  gltfScene.scene.scale.set(0.01, 0.01, 0.01);
+  models3d.push(gltfScene.scene);
+});
+}
+var i = 0;
+Object.keys(shapes3d).forEach((key) => {
+models3d[i].position.x = shapes3d[key].position.x;
+models3d[i].position.y = shapes3d[key].position.y;
+models3d[i].position.z = shapes3d[key].position.z;
+i ++;
+});
+}
+  
 window.onresize = function() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 }
   
-console.log('test 14');
+console.log('test 15');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
