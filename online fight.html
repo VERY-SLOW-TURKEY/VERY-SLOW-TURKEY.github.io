@@ -166,6 +166,9 @@ function start() {
 allPlayersRef.on('value', (snapshot) => {
 var players = snapshot.val() || {};
 Object.keys(players).forEach((key) => {
+console.log(players[key]);
+console.log(players[key].id);
+console.log(shapes3d);
 console.log(shapes3d[players[key].id]);
 shapes3d[players[key].id].position.x = players[key].x;
 shapes3d[players[key].id].position.z = players[key].z;
@@ -200,7 +203,7 @@ window.onresize = function() {
     camera.updateProjectionMatrix();
 }
   
-console.log('test 12');
+console.log('test 13');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
