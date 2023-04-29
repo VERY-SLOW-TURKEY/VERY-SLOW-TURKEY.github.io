@@ -64,7 +64,6 @@ x: Math.random() * 20,
 y: 0,
 z: Math.random() * 20
 });
-start();
 })
 
 window.addEventListener('keyup', keyUp);
@@ -154,6 +153,7 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
   gltfScene.scene.position.y = -1;
   document.getElementById("loading").hidden = true;
   gameLoaded = true;
+  start();
 });
   
 gltfLoader.load('./swat/scene.gltf', (gltfScene2) => {
