@@ -166,7 +166,7 @@ function start() {
 allPlayersRef.on('value', (snapshot) => {
 var players = snapshot.val() || {};
 Object.keys(players).forEach((key) => {
-console.log(players[key]);
+console.log(shapes3d[players[key].id]);
 shapes3d[players[key].id].position.x = players[key].x;
 shapes3d[players[key].id].position.z = players[key].z;
 shapes3d[players[key].id].position.y = players[key].y;
