@@ -116,7 +116,6 @@ controls.lock();
 function gameLoop() {
 if (gameLoaded) {
 renderer.render(scene, camera);
-moveModel();
 }
 move();
 requestAnimationFrame(gameLoop);
@@ -168,20 +167,23 @@ function start() {
 allPlayersRef.on('value', (snapshot) => {
 var players = snapshot.val() || {};
 Object.keys(players).forEach((key) => {
-shapes3d[players[key].id].position.x = players[key].x;
-shapes3d[players[key].id].position.z = players[key].z;
-shapes3d[players[key].id].position.y = players[key].y;
+shapes3d[players[key].id].position.x || cube = players[key].x;
+shapes3d[players[key].id].position.z || cube = players[key].z;
+shapes3d[players[key].id].position.y || cube = players[key].y;
 });
-camera.position.x = shapes3d[playerId].position.x;
-camera.position.z = shapes3d[playerId].position.z;
-camera.position.y = shapes3d[playerId].position.y;
+camera.position.x = shapes3d[playerId].position.x || cube;
+camera.position.z = shapes3d[playerId].position.z || cube;
+camera.position.y = shapes3d[playerId].position.y || cube;
 });
   
 allPlayersRef.on('child_added', (snapshot) => {
 var newPlayer = snapshot.val();
 players[newPlayer.id] = newPlayer;
-shapes3d[newPlayer.id] = new THREE.Mesh( cubeGeo, blueMat );
-scene.add(shapes3d[newPlayer.id]);
+gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
+  scene.add(gltfScene.scene);
+  gltfScene.scene.scale.set(0.01, 0.01, 0.01);
+  shapes3d[newPlayer.id] = gltfScene.scene;
+});
 });
 
 allPlayersRef.on('child_removed', (snapshot) => {
@@ -190,23 +192,6 @@ delete shapes3d[snapshot.val().id];
 delete players[snapshot.val().id];
 });
 playerRef.onDisconnect().remove();
-}
-  
-function moveModel() {
-if (Object.keys(shapes3d).length - models3d.length > 0) {
-gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
-  scene.add(gltfScene.scene);
-  gltfScene.scene.scale.set(0.01, 0.01, 0.01);
-  models3d.push(gltfScene.scene);
-});
-}
-var i = 0;
-Object.keys(shapes3d).forEach((key) => {
-models3d[i].position.x = shapes3d[key].position.x;
-models3d[i].position.y = shapes3d[key].position.y;
-models3d[i].position.z = shapes3d[key].position.z;
-i ++;
-});
 }
   
 window.onresize = function() {
