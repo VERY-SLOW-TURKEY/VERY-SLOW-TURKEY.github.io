@@ -180,10 +180,10 @@ allPlayersRef.on('child_added', (snapshot) => {
 var newPlayer = snapshot.val();
 players[newPlayer.id] = newPlayer;
 gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
+  scene.add(gltfScene.scene);
   gltfScene.scene.scale.set(0.01, 0.01, 0.01);
   shapes3d[newPlayer.id] = gltfScene.scene;
 });
-scene.add(shapes3d[newPlayer.id]);
 });
 
 allPlayersRef.on('child_removed', (snapshot) => {
@@ -200,7 +200,7 @@ window.onresize = function() {
     camera.updateProjectionMatrix();
 }
   
-console.log('test 9');
+console.log('test 10');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
