@@ -51,6 +51,7 @@ var lookX = 0;
 var lookY = 0;
 var mouseDown = 0;
 var rightMouseDown = 0;
+var playerHealth = 100;
   
 allPlayersRef = firebase.database().ref('players');
   
@@ -68,7 +69,8 @@ id: playerId,
 x: Math.random() * 20,
 y: 0,
 z: Math.random() * 20,
-rotation: 0
+rotation: 0,
+health: playerHealth
 });
 })
 
@@ -174,7 +176,8 @@ id: playerId,
 x: camera.position.x,
 y: camera.position.y - 1,
 z: camera.position.z,
-rotation: lookX + Math.PI
+rotation: lookX + Math.PI,
+health: playerHealth
 });
 }
 
@@ -205,6 +208,9 @@ shapes3d[players[key].id].position.x = players[key].x;
 shapes3d[players[key].id].position.z = players[key].z;
 shapes3d[players[key].id].position.y = players[key].y;
 shapes3d[players[key].id].rotation.y = players[key].rotation;
+hitboxes3d[players[key].id].position.x = players[key].x;
+hitboxes3d[players[key].id].position.z = players[key].z;
+hitboxes3d[players[key].id].position.y = players[key].y;
 }
 });
 if (shapes3d[playerId] != undefined) {
@@ -212,6 +218,9 @@ shapes3d[playerId].visible = false;
 shapes3d[playerId].position.x = camera.position.x;
 shapes3d[playerId].position.z = camera.position.z;
 shapes3d[playerId].position.y = camera.position.y;
+hitboxes3d[playerId].position.x = camera.position.x;
+hitboxes3d[playerId].position.z = camera.position.z;
+hitboxes3d[playerId].position.y = camera.position.y;
 }
 });
   
@@ -223,11 +232,16 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
   scene.add(gltfScene.scene);
   shapes3d[newPlayer.id] = gltfScene.scene;
 });
+hitboxes3d[newPlayer.id] = new THREE.Mesh(cubeGeo, blueMat);
+scene.add(hitboxes3d[newPlayer.id]);
+hitboxes3d[newPlayer.id].visible = false;
 });
 
 allPlayersRef.on('child_removed', (snapshot) => {
 scene.remove(shapes3d[snapshot.val().id]);
 delete shapes3d[snapshot.val().id];
+scene.remove(hitboxes3d[snapshot.val().id]);
+delete hitboxes3d[snapshot.val().id];
 delete players[snapshot.val().id];
 });
 playerRef.onDisconnect().remove();
@@ -256,7 +270,11 @@ raycaster.setFromCamera( pointer, camera );
 var shot = raycaster.intersectObjects( scene.children )[0];
 if (shot != undefined) {
 shot = shot.object;
-scene.remove(shot);
+for(i = 0; i < Object.values(hitboxes3d).length; i++) {
+if (Object.values(hitboxes3d)[i] == shot) {
+console.log(Object.keys(hitboxes3d)[i]);
+}
+}
 }
 }
 }
