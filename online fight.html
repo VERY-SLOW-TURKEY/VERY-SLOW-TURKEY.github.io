@@ -154,7 +154,7 @@ id: playerId,
 x: camera.position.x,
 y: camera.position.y - 1,
 z: camera.position.z,
-rotation: lookX
+rotation: -lookX
 });
 }
 
@@ -186,6 +186,7 @@ shapes3d[players[key].id].rotation.y = players[key].rotation;
 }
 });
 if (shapes3d[playerId] != undefined) {
+shapes3d[playerId].visible = false;
 shapes3d[playerId].position.x = camera.position.x;
 shapes3d[playerId].position.z = camera.position.z;
 shapes3d[playerId].position.y = camera.position.y;
@@ -227,7 +228,7 @@ window.onresize = function() {
     camera.updateProjectionMatrix();
 }
   
-console.log('test 25');
+console.log('test 26');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
