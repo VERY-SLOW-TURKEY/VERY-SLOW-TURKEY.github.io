@@ -49,6 +49,8 @@ var sDown = false;
 var gameLoaded = false;
 var lookX = 0;
 var lookY = 0;
+var mouseDown = 0;
+var rightMouseDown = 0;
   
 allPlayersRef = firebase.database().ref('players');
   
@@ -73,6 +75,10 @@ rotation: 0
 window.addEventListener('keyup', keyUp);
 window.addEventListener('keydown', keyDown);
 window.addEventListener('mousemove', mouseMove);
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+pointer.x = 0;
+pointer.y = 0;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 const renderer = new THREE.WebGLRenderer();
@@ -116,11 +122,25 @@ cube.rotation.y = Math.PI / 4;
 document.onclick = function(event) {
 controls.lock();
 }
+  
+window.onmousedown = (event) => {  
+++mouseDown;
+if (event.button == 2) {
+++rightMouseDown;
+}
+}  
+window.onmouseup = () => {  
+--mouseDown;
+if (event.button == 2) {
+--rightMouseDown;
+}
+}
 
 function gameLoop() {
 if (gameLoaded) {
 renderer.render(scene, camera);
 move();
+shootMachineGun();
 }
 requestAnimationFrame(gameLoop);
 }
@@ -230,7 +250,18 @@ window.onresize = function() {
     camera.updateProjectionMatrix();
 }
   
-console.log('test 28');
+function shootMachineGun() {
+if (mouseDown) {
+raycaster.setFromCamera( pointer, camera );
+var shot = raycaster.intersectObjects( scene.children )[0];
+if (shot != undefined) {
+shot = shot.object;
+scene.remove(shot);
+}
+}
+}
+  
+console.log('test 29');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
