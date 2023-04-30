@@ -154,7 +154,7 @@ id: playerId,
 x: camera.position.x,
 y: camera.position.y - 1,
 z: camera.position.z,
-rotation: -lookX
+rotation: lookX + Math.PI
 });
 }
 
@@ -230,7 +230,7 @@ window.onresize = function() {
     camera.updateProjectionMatrix();
 }
   
-console.log('test 27');
+console.log('test 28');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
