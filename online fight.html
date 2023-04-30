@@ -163,6 +163,7 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
   scene.add(gltfScene.scene);
   gltfScene.scene.scale.set(0.01, 0.01, 0.01);
   gltfScene.scene.position.y = -1;
+  gltfScene.scene.rotation.y = 0;
   document.getElementById("loading").hidden = true;
   gameLoaded = true;
   start();
@@ -172,6 +173,7 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene2) => {
   scene.add(gltfScene2.scene);
   gltfScene2.scene.scale.set(0.01, 0.01, 0.01);
   gltfScene2.scene.position.set(5, -1, 5);
+  gltfScene2.scene.rotation.y = Math.PI;
 });
   
 function start() {
@@ -228,7 +230,7 @@ window.onresize = function() {
     camera.updateProjectionMatrix();
 }
   
-console.log('test 26');
+console.log('test 27');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
