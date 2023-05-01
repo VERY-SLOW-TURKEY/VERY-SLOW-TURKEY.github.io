@@ -213,20 +213,12 @@ hitboxes3d[players[key].id].position.z = players[key].z;
 hitboxes3d[players[key].id].position.y = players[key].y + 1;
 }
 });
-if (shapes3d[playerId] != undefined) {
-shapes3d[playerId].visible = false;
-shapes3d[playerId].position.x = camera.position.x;
-shapes3d[playerId].position.z = camera.position.z;
-shapes3d[playerId].position.y = camera.position.y;
-hitboxes3d[playerId].position.x = camera.position.x;
-hitboxes3d[playerId].position.z = camera.position.z;
-hitboxes3d[playerId].position.y = camera.position.y + 1;
-}
 });
   
 allPlayersRef.on('child_added', (snapshot) => {
 var newPlayer = snapshot.val();
 players[newPlayer.id] = newPlayer;
+if (newPlayer.id != playerId) {
 gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
   gltfScene.scene.scale.set(0.01, 0.01, 0.01);
   scene.add(gltfScene.scene);
@@ -235,6 +227,7 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
 hitboxes3d[newPlayer.id] = new THREE.Mesh(cubeGeo, blueMat);
 scene.add(hitboxes3d[newPlayer.id]);
 //hitboxes3d[newPlayer.id].visible = false;
+}
 });
 
 allPlayersRef.on('child_removed', (snapshot) => {
@@ -279,7 +272,7 @@ console.log(Object.keys(hitboxes3d)[i]);
 }
 }
   
-console.log('test 33');
+console.log('test 34');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
