@@ -54,6 +54,7 @@ var rightMouseDown = 0;
 var playerHealth = 100;
   
 allPlayersRef = firebase.database().ref('players');
+attackRef = firebase.database().ref('attack');
   
 firebase.auth().signInAnonymously().catch((error) => {
 var errorCode = error.code;
@@ -229,6 +230,11 @@ scene.add(hitboxes3d[newPlayer.id]);
 hitboxes3d[newPlayer.id].visible = false;
 }
 });
+  
+allPlayersRef.on('value', (snapshot) => {
+var damage = snapshot.val() || {};
+console.log(damage);
+});
 
 allPlayersRef.on('child_removed', (snapshot) => {
 scene.remove(shapes3d[snapshot.val().id]);
@@ -266,13 +272,17 @@ shot = shot.object;
 for(i = 0; i < Object.values(hitboxes3d).length; i++) {
 if (Object.values(hitboxes3d)[i] == shot) {
 console.log(Object.keys(hitboxes3d)[i]);
+attackRef.set({
+target: Object.keys(hitboxes3d)[i],
+amount: 1
+});
 }
 }
 }
 }
 }
   
-console.log('test 34');
+console.log('test 35');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
