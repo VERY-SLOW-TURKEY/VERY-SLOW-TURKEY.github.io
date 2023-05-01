@@ -226,7 +226,7 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
 });
 hitboxes3d[newPlayer.id] = new THREE.Mesh(cubeGeo, blueMat);
 scene.add(hitboxes3d[newPlayer.id]);
-//hitboxes3d[newPlayer.id].visible = false;
+hitboxes3d[newPlayer.id].visible = false;
 }
 });
 
