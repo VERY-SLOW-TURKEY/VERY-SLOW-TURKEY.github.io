@@ -233,7 +233,12 @@ hitboxes3d[newPlayer.id].visible = false;
   
 attackRef.on('value', (snapshot) => {
 var damage = snapshot.val() || {};
-console.log(damage);
+if (damage.target == playerId) {
+playerHealth -= damage.amount;
+}
+if (playerHealth <= 0) {
+window.location.href = "dead.htm";
+}
 });
 
 allPlayersRef.on('child_removed', (snapshot) => {
@@ -274,7 +279,7 @@ if (Object.values(hitboxes3d)[i] == shot) {
 console.log(Object.keys(hitboxes3d)[i]);
 attackRef.set({
 target: Object.keys(hitboxes3d)[i],
-amount: 1
+amount: Math.random()
 });
 }
 }
@@ -282,7 +287,7 @@ amount: 1
 }
 }
   
-console.log('test 36');
+console.log('test 37');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
