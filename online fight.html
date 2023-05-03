@@ -52,6 +52,7 @@ var lookY = 0;
 var mouseDown = 0;
 var rightMouseDown = 0;
 var playerHealth = 100;
+var playerInGame = false;
   
 allPlayersRef = firebase.database().ref('players');
 attackRef = firebase.database().ref('attack');
@@ -71,7 +72,8 @@ x: Math.random() * 20,
 y: 0,
 z: Math.random() * 20,
 rotation: 0,
-health: playerHealth
+health: playerHealth,
+inGame: playerInGame
 });
 })
 
@@ -157,6 +159,7 @@ if (k == 'w') {wDown = true;}
 if (k == 's') {sDown = true;}
 if (k == ' ') {camera.position.y += 0.1;}
 if (k == 'f') {document.documentElement.requestFullscreen();}
+if (k == 'e' && gameLoaded) {playerInGame = true;}
 }
 
 function keyUp(event) {
@@ -178,7 +181,8 @@ x: camera.position.x,
 y: camera.position.y - 1,
 z: camera.position.z,
 rotation: lookX + Math.PI,
-health: playerHealth
+health: playerHealth,
+inGame: playerInGame
 });
 }
 
@@ -212,6 +216,9 @@ shapes3d[players[key].id].rotation.y = players[key].rotation;
 hitboxes3d[players[key].id].position.x = players[key].x;
 hitboxes3d[players[key].id].position.z = players[key].z;
 hitboxes3d[players[key].id].position.y = players[key].y + 1;
+if (players[key].inGame) {
+playerInGame = true;
+}
 }
 });
 });
@@ -219,6 +226,7 @@ hitboxes3d[players[key].id].position.y = players[key].y + 1;
 allPlayersRef.on('child_added', (snapshot) => {
 var newPlayer = snapshot.val();
 players[newPlayer.id] = newPlayer;
+if(!newPlayer.inGame) {
 if (newPlayer.id != playerId) {
 gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
   gltfScene.scene.scale.set(0.01, 0.01, 0.01);
@@ -228,6 +236,7 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
 hitboxes3d[newPlayer.id] = new THREE.Mesh(cubeGeo, blueMat);
 scene.add(hitboxes3d[newPlayer.id]);
 hitboxes3d[newPlayer.id].visible = false;
+}
 }
 });
   
@@ -287,7 +296,7 @@ amount: Math.random() * 5
 }
 }
   
-console.log('test 37');
+console.log('test 38');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
