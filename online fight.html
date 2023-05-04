@@ -376,8 +376,7 @@ if (jumping) {jumping -= 1; camera.position.y += 0.8;}
 }
 
 function gravity() {
-console.log(collideSolids(bottom(cube)));
-if (!collideSolids(bottom(cube))) {camera.position.y -= 0.09; console.log(camera.position.y);}
+if (!collideSolids(bottom(cube))) {camera.position.y -= 0.09;}
 }
 
 function solidWalls(mesh) {
@@ -387,7 +386,6 @@ if (aDown) {keysDown ++;}
 if (sDown) {keysDown ++;}
 if (dDown) {keysDown ++;}
 if ( collideSolids( right(mesh) ) ) {
-console.log('touch');
 if (keysDown >= 2) {
 camera.position.x -= 0.15;
 } else {
@@ -417,7 +415,7 @@ camera.position.z += 0.1;
 }
 }
   
-console.log('test 39');
+console.log('test 40');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
