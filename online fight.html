@@ -53,6 +53,7 @@ var mouseDown = 0;
 var rightMouseDown = 0;
 var playerHealth = 100;
 var playerInGame = false;
+var jumping = 0;
   
 allPlayersRef = firebase.database().ref('players');
 attackRef = firebase.database().ref('attack');
@@ -94,12 +95,12 @@ renderer.shadowMap.enabled = true;
 
 // level
 const light = new THREE.PointLight(0xffffff, 3);
-light.position.set(0, 10, 0);
+light.position.set(25, 50, 25);
 scene.add(light);
 light.castShadow = true;
 const ambLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambLight);
-const sandFloorGeo = new THREE.PlaneGeometry(100, 100);
+const sandFloorGeo = new THREE.BoxGeometry(100, 1, 100);
 const sandTexture = new THREE.TextureLoader().load('./sand.jpg');
 const sandMat = new THREE.MeshLambertMaterial({
 color: 0xd2aa6d,
@@ -108,7 +109,6 @@ map: sandTexture
 });
 const sandFloor = new THREE.Mesh(sandFloorGeo, sandMat);
 scene.add(sandFloor);
-sandFloor.rotation.x = Math.PI * 1.5;
 sandFloor.position.y = -1;
 sandFloor.receiveShadow = true;
 sandFloor.castShadow = true;
@@ -119,10 +119,7 @@ emissive: 0x000000
 });
 const cube = new THREE.Mesh(cubeGeo, blueMat);
 scene.add(cube);
-cube.castShadow = true;
-cube.receiveShadow = true;
-cube.position.x = 5;
-cube.rotation.y = Math.PI / 4;
+cube.visible = false;
 
 document.onclick = function(event) {
 controls.lock();
@@ -146,6 +143,10 @@ if (gameLoaded) {
 renderer.render(scene, camera);
 move();
 shootMachineGun();
+placeHitbox();
+solidWalls(cube);
+gravity();
+jump();
 }
 requestAnimationFrame(gameLoop);
 }
@@ -160,6 +161,7 @@ if (k == 's') {sDown = true;}
 if (k == ' ') {camera.position.y += 0.1;}
 if (k == 'f') {document.documentElement.requestFullscreen();}
 if (k == 'e' && gameLoaded) {playerInGame = true;}
+if (k == ' ') {if (collideSolids(bottom(cube))) {jumping = 10;}}
 }
 
 function keyUp(event) {
@@ -296,7 +298,126 @@ amount: Math.random() * 5
 }
 }
   
-console.log('test 38');
+// jumping mechanics
+function collideSolids(mesh) {
+for (i = 0; i<scene.children.length; i++) {
+if (scene.children[i].type == 'Mesh') {
+var mesh2 = scene.children[i];
+var meshXRight = mesh.position.x + mesh.geometry.parameters.width / 2;
+var meshXLeft = mesh.position.x - mesh.geometry.parameters.width / 2;
+var meshYUp = mesh.position.y + mesh.geometry.parameters.height / 2;
+var meshYDown = mesh.position.y - mesh.geometry.parameters.height / 2;
+var meshZRight = mesh.position.z + mesh.geometry.parameters.depth / 2;
+var meshZLeft = mesh.position.z - mesh.geometry.parameters.depth / 2;
+
+var mesh2XRight = mesh2.position.x + mesh2.geometry.parameters.width / 2;
+var mesh2XLeft = mesh2.position.x - mesh2.geometry.parameters.width / 2;
+var mesh2YUp = mesh2.position.y + mesh2.geometry.parameters.height / 2;
+var mesh2YDown = mesh2.position.y - mesh2.geometry.parameters.height / 2;
+var mesh2ZRight = mesh2.position.z + mesh2.geometry.parameters.depth / 2;
+var mesh2ZLeft = mesh2.position.z - mesh2.geometry.parameters.depth / 2;
+if (meshXRight >= mesh2XLeft && meshXLeft <= mesh2XRight && meshYUp >= mesh2YDown && meshYDown <= mesh2YUp && meshZRight >= mesh2ZLeft && meshZLeft <= mesh2ZRight) {
+return true;
+}
+}
+}
+return false;
+}
+
+function right(mesh) {
+var rightMesh = {
+position:{x: mesh.position.x + mesh.geometry.parameters.width / 2 + 0.1, y: mesh.position.y + 0.1, z: mesh.position.z},
+geometry:{parameters:{width: 0, height: mesh.geometry.parameters.height / 2, depth: mesh.geometry.parameters.depth / 2}}
+}
+return rightMesh;
+}
+function left(mesh) {
+var leftMesh = {
+position:{x: mesh.position.x - mesh.geometry.parameters.width / 2 - 0.1, y: mesh.position.y + 0.1, z: mesh.position.z},
+geometry:{parameters:{width: 0, height: mesh.geometry.parameters.height / 2, depth: mesh.geometry.parameters.depth / 2}}
+}
+return leftMesh;
+}
+function front(mesh) {
+var frontMesh = {
+position:{x: mesh.position.x, y: mesh.position.y + 0.1, z: mesh.position.z + mesh.geometry.parameters.depth / 2 + 0.1},
+geometry:{parameters:{width: mesh.geometry.parameters.width / 2, height: mesh.geometry.parameters.height / 2, depth: 0}}
+}
+return frontMesh;
+}
+function back(mesh) {
+var backMesh = {
+position:{x: mesh.position.x, y: mesh.position.y += 0.1, z: mesh.position.z - mesh.geometry.parameters.depth / 2 - 0.1},
+geometry:{parameters:{width: mesh.geometry.parameters.width / 2, height: mesh.geometry.parameters.height / 2, depth: 0}}
+}
+return backMesh;
+}
+function tip(mesh) {
+var topMesh = {
+position:{x: mesh.position.x, y: mesh.position.y + mesh.geometry.parameters.height / 2 + 0.1, z: mesh.position.z},
+geometry:{parameters:{width: mesh.geometry.parameters.width / 2, height: 0, depth: mesh.geometry.parameters.depth / 2}}
+}
+return topMesh;
+}
+function bottom(mesh) {
+var bottomMesh = {
+position:{x: mesh.position.x, y: mesh.position.y - mesh.geometry.parameters.height / 2 - 0.1, z: mesh.position.z},
+geometry:{parameters:{width: mesh.geometry.parameters.width / 2, height: 0, depth: mesh.geometry.parameters.depth / 2}}
+}
+return bottomMesh;
+}
+
+function placeHitbox() {
+cube.position.set(camera.position.x, camera.position.y, camera.position.z);
+}
+
+function jump() {
+if (jumping) {jumping -= 1; camera.position.y += 0.8;}
+}
+
+function gravity() {
+console.log(collideSolids(bottom(cube)));
+if (!collideSolids(bottom(cube))) {camera.position.y -= 0.09; console.log(camera.position.y);}
+}
+
+function solidWalls(mesh) {
+var keysDown = 0;
+if (wDown) {keysDown ++;}
+if (aDown) {keysDown ++;}
+if (sDown) {keysDown ++;}
+if (dDown) {keysDown ++;}
+if ( collideSolids( right(mesh) ) ) {
+console.log('touch');
+if (keysDown >= 2) {
+camera.position.x -= 0.15;
+} else {
+camera.position.x -= 0.1;
+}
+}
+if ( collideSolids( left(mesh) ) ) {
+if (keysDown >= 2) {
+camera.position.x += 0.15;
+} else {
+camera.position.x += 0.1;
+}
+}
+if ( collideSolids( front(mesh) ) ) {
+if (keysDown >= 2) {
+camera.position.z -= 0.15;
+} else {
+camera.position.z -= 0.1;
+}
+}
+if ( collideSolids( back(mesh) ) ) {
+if (keysDown >= 2) {
+camera.position.z += 0.15;
+} else {
+camera.position.z += 0.1;
+}
+}
+}
+  
+console.log('test 39');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
