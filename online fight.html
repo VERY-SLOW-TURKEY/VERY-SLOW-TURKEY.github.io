@@ -120,6 +120,123 @@ emissive: 0x000000
 const cube = new THREE.Mesh(cubeGeo, blueMat);
 scene.add(cube);
 cube.visible = false;
+  
+// sky box
+const skyTexture = new THREE.TextureLoader().load('data:image/jpeg;base64,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');
+skyTexture.wrapS = THREE.RepeatWrapping;
+skyTexture.wrapT = THREE.RepeatWrapping;
+skyTexture.repeat.set( 4, 4 );
+const skyGeo = new THREE.PlaneGeometry(2500, 2500);
+const skyMat = new THREE.MeshBasicMaterial({
+map: skyTexture
+});
+const skybox = new THREE.Mesh(skyGeo, skyMat)
+scene.add(skybox);
+skybox.rotation.x = 90 * Math.PI / 180;
+skybox.position.y = 200;
+scene.background = new THREE.Color(0x7995);
+
+// mountain border
+const coneGeo = new THREE.ConeGeometry( 125, 150, 10 );
+const mountain = new THREE.Mesh(coneGeo, sandMat);
+scene.add(mountain);
+mountain.position.set(150, 40, 180);
+const mountain2 = new THREE.Mesh(coneGeo, sandMat);
+scene.add(mountain2);
+mountain2.position.set(50, 40, 180);
+const mountain3 = new THREE.Mesh(coneGeo, sandMat);
+scene.add(mountain3);
+mountain3.position.set(-50, 40, 180);
+const mountain4 = new THREE.Mesh(coneGeo, sandMat);
+scene.add(mountain4);
+mountain4.position.set(-150, 40, 180);
+const mountain5 = new THREE.Mesh(coneGeo, sandMat);
+scene.add(mountain5);
+mountain5.position.set(-175, 40, 90);
+const mountain6 = new THREE.Mesh(coneGeo, sandMat);
+scene.add(mountain6);
+mountain6.position.set(-175, 40, -10);
+const mountain7 = new THREE.Mesh(coneGeo, sandMat);
+scene.add(mountain7);
+mountain7.position.set(-175, 40, -110);
+const mountain8 = new THREE.Mesh(coneGeo, sandMat);
+scene.add(mountain8);
+mountain8.position.set(-85, 40, -182);
+const mountain9 = new THREE.Mesh(coneGeo, sandMat);
+scene.add(mountain9);
+mountain9.position.set(25, 40, -182);
+const mountain10 = new THREE.Mesh(coneGeo, sandMat);
+scene.add(mountain10);
+mountain10.position.set(125, 40, -182);
+const mountain11 = new THREE.Mesh(coneGeo, sandMat);
+scene.add(mountain11);
+mountain11.position.set(175, 40, -82);
+const mountain12 = new THREE.Mesh(coneGeo, sandMat);
+scene.add(mountain12);
+mountain12.position.set(175, 40, 18);
+const mountain13 = new THREE.Mesh(coneGeo, sandMat);
+scene.add(mountain13);
+mountain13.position.set(175, 40, 68);
+
+// tower
+const towerGeo = new THREE.BoxGeometry(5, 14, 0.5);
+const towerWall = new THREE.Mesh(towerGeo, sandMat);
+scene.add(towerWall);
+towerWall.castShadow = true;
+towerWall.receiveShadow = true;
+towerWall.position.set(10, 6.5, 0);
+const towerWall2 = new THREE.Mesh(towerGeo, sandMat);
+scene.add(towerWall2);
+towerWall2.castShadow = true;
+towerWall2.receiveShadow = true;
+towerWall2.position.set(10, 6.5, 5);
+const towerGeo2 = new THREE.BoxGeometry(0.5, 14, 5);
+const towerWall3 = new THREE.Mesh(towerGeo2, sandMat);
+scene.add(towerWall3);
+towerWall3.castShadow = true;
+towerWall3.receiveShadow = true;
+towerWall3.position.set(12.25, 6.5, 2.5);
+const towerGeo3 = new THREE.BoxGeometry(0.5, 14, 2);
+const towerWall4 = new THREE.Mesh(towerGeo3, sandMat);
+scene.add(towerWall4);
+towerWall4.castShadow = true;
+towerWall4.receiveShadow = true;
+towerWall4.position.set(7.75, 6.5, 1);
+const towerWall5 = new THREE.Mesh(towerGeo3, sandMat);
+scene.add(towerWall5);
+towerWall5.castShadow = true;
+towerWall5.receiveShadow = true;
+towerWall5.position.set(7.75, 6.5, 4);
+const towerGeo4 = new THREE.BoxGeometry(0.5, 11.5, 2);
+const towerWall6 = new THREE.Mesh(towerGeo4, sandMat);
+scene.add(towerWall6);
+towerWall6.castShadow = true;
+towerWall6.receiveShadow = true;
+towerWall6.position.set(7.75, 7.75, 3);
+const towerLight = new THREE.PointLight(0xffffff, 1);
+towerLight.position.set(10, 12, 2.5);
+scene.add(towerLight);
+const doorTrimGeo = new THREE.BoxGeometry(0.1, 2.5, 0.1);
+const doorTrimMat = new THREE.MeshLambertMaterial({
+color: 0xa88f59,
+emissive: 0x000000,
+});
+const doorTrim1 = new THREE.Mesh(doorTrimGeo, doorTrimMat);
+scene.add(doorTrim1);
+doorTrim1.castShadow = true;
+doorTrim1.receiveShadow = true;
+doorTrim1.position.set(7.5, 0.75, 2);
+const doorTrim2 = new THREE.Mesh(doorTrimGeo, doorTrimMat);
+scene.add(doorTrim2);
+doorTrim2.castShadow = true;
+doorTrim2.receiveShadow = true;
+doorTrim2.position.set(7.5, 0.75, 3);
+const doorTrimGeo2 = new THREE.BoxGeometry(0.1, 0.1, 1.1);
+const doorTrim3 = new THREE.Mesh(doorTrimGeo2, doorTrimMat);
+scene.add(doorTrim3);
+doorTrim3.castShadow = true;
+doorTrim3.receiveShadow = true;
+doorTrim3.position.set(7.5, 2, 2.5);
 
 document.onclick = function(event) {
 controls.lock();
