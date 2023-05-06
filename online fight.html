@@ -100,8 +100,11 @@ scene.add(light);
 light.castShadow = true;
 const ambLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambLight);
-const sandFloorGeo = new THREE.BoxGeometry(100, 1, 100);
+const sandFloorGeo = new THREE.BoxGeometry(200, 1, 200);
 const sandTexture = new THREE.TextureLoader().load('./sand.jpg');
+sandTexture.wrapS = THREE.RepeatWrapping;
+sandTexture.wrapT = THREE.RepeatWrapping;
+sandTexture.repeat.set( 2, 2 );
 const sandMat = new THREE.MeshLambertMaterial({
 color: 0xd2aa6d,
 emissive: 0x000000,
@@ -485,7 +488,7 @@ return bottomMesh;
 }
 
 function placeHitbox() {
-cube.position.set(camera.position.x, camera.position.y, camera.position.z);
+cube.position.set(camera.position.x, camera.position.y - 0.5, camera.position.z);
 }
 
 function jump() {
@@ -546,7 +549,7 @@ camera.position.z = -80;
 }
 }
   
-console.log('test 42');
+console.log('test 43');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
