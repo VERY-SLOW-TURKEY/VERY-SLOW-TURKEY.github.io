@@ -104,7 +104,7 @@ const sandFloorGeo = new THREE.BoxGeometry(200, 1, 200);
 const sandTexture = new THREE.TextureLoader().load('./sand.jpg');
 sandTexture.wrapS = THREE.RepeatWrapping;
 sandTexture.wrapT = THREE.RepeatWrapping;
-sandTexture.repeat.set( 2, 2 );
+sandTexture.repeat.set( 1, 1 );
 const sandMat = new THREE.MeshLambertMaterial({
 color: 0xd2aa6d,
 emissive: 0x000000,
@@ -333,11 +333,11 @@ Object.keys(players).forEach((key) => {
 if (shapes3d[players[key].id] != undefined) {
 shapes3d[players[key].id].position.x = players[key].x;
 shapes3d[players[key].id].position.z = players[key].z;
-shapes3d[players[key].id].position.y = players[key].y;
+shapes3d[players[key].id].position.y = players[key].y - 0.5;
 shapes3d[players[key].id].rotation.y = players[key].rotation;
 hitboxes3d[players[key].id].position.x = players[key].x;
 hitboxes3d[players[key].id].position.z = players[key].z;
-hitboxes3d[players[key].id].position.y = players[key].y + 1;
+hitboxes3d[players[key].id].position.y = players[key].y + 0.5;
 if (players[key].inGame) {
 playerInGame = true;
 }
@@ -549,7 +549,7 @@ camera.position.z = -80;
 }
 }
   
-console.log('test 43');
+console.log('test 44');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
