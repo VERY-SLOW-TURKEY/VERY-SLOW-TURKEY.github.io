@@ -126,7 +126,7 @@ const skyTexture = new THREE.TextureLoader().load('data:image/jpeg;base64,/9j/4A
 skyTexture.wrapS = THREE.RepeatWrapping;
 skyTexture.wrapT = THREE.RepeatWrapping;
 skyTexture.repeat.set( 4, 4 );
-const skyGeo = new THREE.PlaneGeometry(2500, 2500);
+const skyGeo = new THREE.PlaneGeometry(4500, 4500);
 const skyMat = new THREE.MeshBasicMaterial({
 map: skyTexture
 });
