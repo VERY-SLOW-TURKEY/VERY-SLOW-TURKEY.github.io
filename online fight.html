@@ -336,7 +336,7 @@ if (k == 'w') {wDown = true;}
 if (k == 's') {sDown = true;}
 if (k == ' ') {camera.position.y += 0.1;}
 if (k == 'f') {document.documentElement.requestFullscreen();}
-if (k == 'e' && gameLoaded) {playerInGame = true;}
+if (k == 'e' && gameLoaded) {playerInGame = true; spawnInGame();}
 if (k == ' ') {if (collideSolids(bottom(cube))) {jumping = 10;}}
 }
 
@@ -636,7 +636,7 @@ gameStarting = true;
 }
 }
   
-console.log('test 51');
+console.log('test 52');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
