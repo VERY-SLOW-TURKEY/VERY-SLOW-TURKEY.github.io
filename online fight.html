@@ -574,7 +574,6 @@ if (collide(front(cube), ladder)) {camera.position.y += 0.4;}
 if (collide(back(cube), ladder)) {camera.position.y += 0.4;}
 if (collide(right(cube), ladder)) {camera.position.y += 0.4;}
 if (collide(left(cube), ladder)) {camera.position.y += 0.4;}
-if (collideSolids(cube)) {camera.position.y += 0.4;}
 
 // collide all walls
 var keysDown = 0;
@@ -628,12 +627,13 @@ camera.position.z = -80;
   
 function spawnInGame() {
 if (!playerInGame) {
+console.log(playerInGame);
 camera.position.x = Math.random() * 150;
 camera.position.z = Math.random() * 150;
 }
 }
   
-console.log('test 48');
+console.log('test 49');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
