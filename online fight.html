@@ -53,6 +53,7 @@ var mouseDown = 0;
 var rightMouseDown = 0;
 var playerHealth = 100;
 var playerInGame = false;
+var gameStarting = false;
 var jumping = 0;
   
 allPlayersRef = firebase.database().ref('players');
@@ -626,14 +627,15 @@ camera.position.z = -80;
 }
   
 function spawnInGame() {
-if (!playerInGame) {
+if (!gameStarting) {
 console.log(playerInGame);
 camera.position.x = Math.random() * 150;
 camera.position.z = Math.random() * 150;
+gameStarting = true;
 }
 }
   
-console.log('test 49');
+console.log('test 50');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
