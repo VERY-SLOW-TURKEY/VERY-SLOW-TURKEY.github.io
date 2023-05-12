@@ -253,6 +253,48 @@ scene.add(ladder);
 ladder.position.set(11.9, 6.5, 2.5);
 ladder.castShadow = true;
 ladder.receiveShadow = true;
+  
+// small house 1
+const houseGeo = new THREE.BoxGeometry(4, 4, 0.5);
+const houseWall = new THREE.Mesh(houseGeo, sandMat)
+scene.add(houseWall);
+houseWall.castShadow = true;
+houseWall.receiveShadow = true;
+houseWall.position.set(10, 1.5, -10);
+const houseWall2 = new THREE.Mesh(houseGeo, sandMat)
+scene.add(houseWall2);
+houseWall2.castShadow = true;
+houseWall2.receiveShadow = true;
+houseWall2.position.set(10, 1.5, -16);
+const houseGeo2 = new THREE.BoxGeometry(0.5, 4, 6);
+const houseWall3 = new THREE.Mesh(houseGeo2, sandMat)
+scene.add(houseWall3);
+houseWall3.castShadow = true;
+houseWall3.receiveShadow = true;
+houseWall3.position.set(11.75, 1.5, -13);
+const houseGeo3 = new THREE.BoxGeometry(0.5, 4, 2.5);
+const houseWall4 = new THREE.Mesh(houseGeo3, sandMat)
+scene.add(houseWall4);
+houseWall4.castShadow = true;
+houseWall4.receiveShadow = true;
+houseWall4.position.set(8.25, 1.5, -14.5);
+const houseWall5 = new THREE.Mesh(houseGeo3, sandMat)
+scene.add(houseWall5);
+houseWall5.castShadow = true;
+houseWall5.receiveShadow = true;
+houseWall5.position.set(8.25, 1.5, -11);
+const houseGeo4 = new THREE.BoxGeometry(0.5, 1.5, 2.5);
+const houseWall6 = new THREE.Mesh(houseGeo4, sandMat)
+scene.add(houseWall6);
+houseWall6.castShadow = true;
+houseWall6.receiveShadow = true;
+houseWall6.position.set(8.25, 2.75, -13);
+const houseGeo5 = new THREE.BoxGeometry(4.5, 0.5, 7);
+const houseWall7 = new THREE.Mesh(houseGeo5, sandMat)
+scene.add(houseWall7);
+houseWall7.castShadow = true;
+houseWall7.receiveShadow = true;
+houseWall7.position.set(10, 3.5, -13);
 
 document.onclick = function(event) {
 controls.lock();
@@ -582,7 +624,7 @@ camera.position.z = -80;
 }
 }
   
-console.log('test 46');
+console.log('test 47');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
