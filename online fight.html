@@ -55,6 +55,7 @@ var playerHealth = 100;
 var playerInGame = false;
 var gameStarting = false;
 var jumping = 0;
+var canShoot = false;
   
 allPlayersRef = firebase.database().ref('players');
 attackRef = firebase.database().ref('attack');
@@ -450,7 +451,9 @@ window.onresize = function() {
 }
   
 function shootMachineGun() {
-if (mouseDown) {
+if (mouseDown && canShoot) {
+canShoot = false;
+setTimeout(reload, 200);
 raycaster.setFromCamera( pointer, camera );
 var shot = raycaster.intersectObjects( scene.children )[0];
 if (shot != undefined) {
@@ -460,12 +463,16 @@ if (Object.values(hitboxes3d)[i] == shot) {
 console.log(Object.keys(hitboxes3d)[i]);
 attackRef.set({
 target: Object.keys(hitboxes3d)[i],
-amount: Math.random() * 5
+amount: Math.random() * 10
 });
 }
 }
 }
 }
+}
+  
+function reload() {
+canShoot = true;
 }
   
 // jumping mechanics
@@ -635,7 +642,7 @@ gameStarting = true;
 }
 }
   
-console.log('test 53');
+console.log('test 54');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
