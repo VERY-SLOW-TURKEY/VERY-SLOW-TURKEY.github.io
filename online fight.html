@@ -460,7 +460,7 @@ if (Object.values(hitboxes3d)[i] == shot) {
 console.log(Object.keys(hitboxes3d)[i]);
 attackRef.set({
 target: Object.keys(hitboxes3d)[i],
-amount: Math.random() * 10
+amount: Number(Math.random().toFixed(3)) * 10
 });
 }
 }
@@ -635,7 +635,7 @@ gameStarting = true;
 }
 }
   
-console.log('test 55');
+console.log('test 56');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
