@@ -13,9 +13,16 @@ top: 75%;
 text-align: center;
 font-size: 400%;
 }
+#countdown {
+position: fixed;
+font-size: 6vw;
+top: 0.01vw;
+left: 48vw;
+}
 </style>
 </head>
 <body>
+<p id="countdown"></p>
 <p id="loading">Loading...</p>
 <script src="three.js"></script>
 <script src="PointerLockControls.js"></script>
@@ -55,6 +62,7 @@ var playerHealth = 100;
 var playerInGame = false;
 var gameStarting = false;
 var jumping = 0;
+var canMove = true;
   
 allPlayersRef = firebase.database().ref('players');
 attackRef = firebase.database().ref('attack');
@@ -317,7 +325,7 @@ if (event.button == 2) {
 function gameLoop() {
 if (gameLoaded) {
 renderer.render(scene, camera);
-move();
+if (canMove) {move();}
 shootMachineGun();
 placeHitbox();
 solidWalls(cube);
@@ -628,14 +636,22 @@ camera.position.z = -80;
   
 function spawnInGame() {
 if (!gameStarting) {
-camera.position.x = Math.random() * 150;
-camera.position.z = Math.random() * 150;
+document.getElementById('countdown').innerHTML = '3';
+camera.position.x = -150 + Math.random() * 300;
+camera.position.z = -150 + Math.random() * 300;
 camera.position.y = 2;
 gameStarting = true;
+canMove = false;
+setTimeout(startTimer1, 1000);
 }
 }
   
-console.log('test 56');
+function startTimer1() {document.getElementById('countdown').innerHTML = '2'; setTimeout(startTimer2, 1000);}
+function startTimer2() {document.getElementById('countdown').innerHTML = '1'; setTimeout(startTimer3, 1000);}
+function startTimer3() {document.getElementById('countdown').innerHTML = 'Battle!'; setTimeout(startTimer4, 1000); canMove = true;}
+function startTimer4() {document.getElementById('countdown').innerHTML = '';}
+  
+console.log('test 57');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
