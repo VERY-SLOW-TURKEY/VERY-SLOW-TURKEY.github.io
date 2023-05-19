@@ -22,7 +22,7 @@ left: 48vw;
 </style>
 </head>
 <body>
-<p id="countdown"></p>
+<p id="countdown">Press E to start</p>
 <p id="loading">Loading...</p>
 <script src="three.js"></script>
 <script src="PointerLockControls.js"></script>
@@ -58,11 +58,13 @@ var lookX = 0;
 var lookY = 0;
 var mouseDown = 0;
 var rightMouseDown = 0;
+var leftMouseDown = 0;
 var playerHealth = 100;
 var playerInGame = false;
 var gameStarting = false;
 var jumping = 0;
 var canMove = true;
+var canShoot = false;
   
 allPlayersRef = firebase.database().ref('players');
 attackRef = firebase.database().ref('attack');
@@ -314,11 +316,17 @@ window.onmousedown = (event) => {
 if (event.button == 2) {
 ++rightMouseDown;
 }
+if (event.button == 0) {
+++leftMouseDown;
+}
 }  
 window.onmouseup = () => {  
 --mouseDown;
 if (event.button == 2) {
 --rightMouseDown;
+}
+if (event.button == 0) {
+--leftMouseDown;
 }
 }
 
@@ -458,7 +466,7 @@ window.onresize = function() {
 }
   
 function shootMachineGun() {
-if (mouseDown) {
+if (leftMouseDown && canShoot) {
 raycaster.setFromCamera( pointer, camera );
 var shot = raycaster.intersectObjects( scene.children )[0];
 if (shot != undefined) {
@@ -648,10 +656,10 @@ setTimeout(startTimer1, 1000);
   
 function startTimer1() {document.getElementById('countdown').innerHTML = '2'; setTimeout(startTimer2, 1000);}
 function startTimer2() {document.getElementById('countdown').innerHTML = '1'; setTimeout(startTimer3, 1000);}
-function startTimer3() {document.getElementById('countdown').innerHTML = 'Battle!'; setTimeout(startTimer4, 1000); canMove = true;}
+function startTimer3() {document.getElementById('countdown').innerHTML = 'Battle!'; setTimeout(startTimer4, 1000); canMove = true; canShoot = true;}
 function startTimer4() {document.getElementById('countdown').innerHTML = '';}
   
-console.log('test 57');
+console.log('test 58');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
