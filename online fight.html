@@ -465,9 +465,12 @@ window.onresize = function() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 }
-  
+
+var reloadTime = 0;
 function shootMachineGun() {
-if (leftMouseDown && canShoot) {
+if (reloadTime > 0) {reloadTime--;}
+if (leftMouseDown && canShoot && reloadTime <= 0) {
+reloadTime = 20;
 raycaster.setFromCamera( pointer, camera );
 var shot = raycaster.intersectObjects( scene.children )[0];
 if (shot != undefined) {
@@ -663,7 +666,7 @@ function startTimer2() {document.getElementById('countdown').innerHTML = '1'; se
 function startTimer3() {document.getElementById('countdown').innerHTML = 'Battle!'; setTimeout(startTimer4, 1000); canMove = true; canShoot = true;}
 function startTimer4() {document.getElementById('countdown').innerHTML = '';}
   
-console.log('test 59');
+console.log('test 60');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
