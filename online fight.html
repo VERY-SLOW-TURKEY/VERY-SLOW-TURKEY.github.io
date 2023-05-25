@@ -526,7 +526,7 @@ amount: Number(Math.random().toFixed(3)) * 55
   
 function shootSniper() {
 if (canShoot && reloadTime <= 0 && gun == 'sniper') {
-reloadTime = 400;
+reloadTime = 40;
 raycaster.setFromCamera( pointer, camera );
 var shot = raycaster.intersectObjects( scene.children )[0];
 if (shot != undefined) {
@@ -535,7 +535,7 @@ for(i = 0; i < Object.values(hitboxes3d).length; i++) {
 if (Object.values(hitboxes3d)[i] == shot) {
 attackRef.set({
 target: Object.keys(hitboxes3d)[i],
-amount: Number(Math.random().toFixed(3)) * 200
+amount: Number(Math.random().toFixed(3)) * 55
 });
 }
 }
@@ -721,7 +721,7 @@ function startTimer2() {document.getElementById('countdown').innerHTML = '1'; se
 function startTimer3() {document.getElementById('countdown').innerHTML = 'Battle!'; setTimeout(startTimer4, 1000); canMove = true; canShoot = true;}
 function startTimer4() {document.getElementById('countdown').innerHTML = '';}
   
-console.log('test 64');
+console.log('test 65');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
