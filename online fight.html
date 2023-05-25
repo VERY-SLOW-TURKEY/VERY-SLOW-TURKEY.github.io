@@ -426,7 +426,7 @@ playerInGame = true;
 allPlayersRef.on('child_added', (snapshot) => {
 var newPlayer = snapshot.val();
 players[newPlayer.id] = newPlayer;
-if(!newPlayer.inGame) {
+if(!newPlayer.inGame && !playerInGame) {
 if (newPlayer.id != playerId) {
 gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
   gltfScene.scene.scale.set(0.01, 0.01, 0.01);
@@ -538,7 +538,7 @@ for(i = 0; i < Object.values(hitboxes3d).length; i++) {
 if (Object.values(hitboxes3d)[i] == shot) {
 attackRef.set({
 target: Object.keys(hitboxes3d)[i],
-amount: Number(Math.random().toFixed(3)) * 200
+amount: Number(Math.random().toFixed(3)) * 150
 });
 }
 }
@@ -724,7 +724,7 @@ function startTimer2() {document.getElementById('countdown').innerHTML = '1'; se
 function startTimer3() {document.getElementById('countdown').innerHTML = 'Battle!'; setTimeout(startTimer4, 1000); canMove = true; canShoot = true;}
 function startTimer4() {document.getElementById('countdown').innerHTML = '';}
   
-console.log('test 68');
+console.log('test 69');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
