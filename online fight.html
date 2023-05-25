@@ -310,6 +310,7 @@ houseWall7.position.set(10, 3.5, -13);
 
 document.onclick = function(event) {
 controls.lock();
+shootMagnum();
 }
   
 window.onmousedown = (event) => {  
@@ -355,8 +356,8 @@ if (k == ' ') {camera.position.y += 0.1;}
 if (k == 'f') {document.documentElement.requestFullscreen();}
 if (k == 'e' && gameLoaded) {playerInGame = true; spawnInGame();}
 if (k == ' ') {if (collideSolids(bottom(cube))) {jumping = 10;}}
-if (k == '1') {gun == 'machine gun';}
-if (k == '2') {gun == 'magnum';}
+if (k == '1') {gun = 'machine gun';}
+if (k == '2') {gun = 'magnum';}
 }
 
 function keyUp(event) {
@@ -691,7 +692,7 @@ function startTimer2() {document.getElementById('countdown').innerHTML = '1'; se
 function startTimer3() {document.getElementById('countdown').innerHTML = 'Battle!'; setTimeout(startTimer4, 1000); canMove = true; canShoot = true;}
 function startTimer4() {document.getElementById('countdown').innerHTML = '';}
   
-console.log('test 61');
+console.log('test 62');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
