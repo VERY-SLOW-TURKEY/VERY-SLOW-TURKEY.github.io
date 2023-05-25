@@ -22,7 +22,7 @@ left: 48vw;
 </style>
 </head>
 <body>
-<p id="countdown">Press E to start</p>
+<p id="countdown" hidden>Press E to start</p>
 <p id="loading">Loading...</p>
 <script src="three.js"></script>
 <script src="PointerLockControls.js"></script>
@@ -65,6 +65,7 @@ var gameStarting = false;
 var jumping = 0;
 var canMove = true;
 var canShoot = false;
+var gun = 'machine gun';
   
 allPlayersRef = firebase.database().ref('players');
 attackRef = firebase.database().ref('attack');
@@ -354,6 +355,8 @@ if (k == ' ') {camera.position.y += 0.1;}
 if (k == 'f') {document.documentElement.requestFullscreen();}
 if (k == 'e' && gameLoaded) {playerInGame = true; spawnInGame();}
 if (k == ' ') {if (collideSolids(bottom(cube))) {jumping = 10;}}
+if (k == '1') {gun == 'machine gun';}
+if (k == '2') {gun == 'magnum';}
 }
 
 function keyUp(event) {
@@ -387,6 +390,7 @@ gltfLoader.load('./swat/scene.gltf', (gltfScene) => {
   gltfScene.scene.position.set(0, 50, 160)
   gltfScene.scene.rotation.y = 0;
   document.getElementById("loading").hidden = true;
+  document.getElementById("countdown").hidden = false;
   gameLoaded = true;
   start();
 });
@@ -466,10 +470,12 @@ window.onresize = function() {
     camera.updateProjectionMatrix();
 }
 
+// guns
+  
 var reloadTime = 0;
 function shootMachineGun() {
 if (reloadTime > 0) {reloadTime--;}
-if (leftMouseDown && canShoot && reloadTime <= 0) {
+if (leftMouseDown && canShoot && reloadTime <= 0 && gun == 'machine gun') {
 reloadTime = 20;
 raycaster.setFromCamera( pointer, camera );
 var shot = raycaster.intersectObjects( scene.children )[0];
@@ -480,7 +486,26 @@ if (Object.values(hitboxes3d)[i] == shot) {
 console.log(Object.keys(hitboxes3d)[i]);
 attackRef.set({
 target: Object.keys(hitboxes3d)[i],
-amount: Number(Math.random().toFixed(3)) * 50
+amount: Number(Math.random().toFixed(3)) * 30
+});
+}
+}
+}
+}
+}
+  
+function shootMagnum() {
+if (leftMouseDown && canShoot && reloadTime <= 0 && gun == 'magnum') {
+reloadTime = 40;
+raycaster.setFromCamera( pointer, camera );
+var shot = raycaster.intersectObjects( scene.children )[0];
+if (shot != undefined) {
+shot = shot.object;
+for(i = 0; i < Object.values(hitboxes3d).length; i++) {
+if (Object.values(hitboxes3d)[i] == shot) {
+attackRef.set({
+target: Object.keys(hitboxes3d)[i],
+amount: Number(Math.random().toFixed(3)) * 55
 });
 }
 }
@@ -666,7 +691,7 @@ function startTimer2() {document.getElementById('countdown').innerHTML = '1'; se
 function startTimer3() {document.getElementById('countdown').innerHTML = 'Battle!'; setTimeout(startTimer4, 1000); canMove = true; canShoot = true;}
 function startTimer4() {document.getElementById('countdown').innerHTML = '';}
   
-console.log('test 60');
+console.log('test 61');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
