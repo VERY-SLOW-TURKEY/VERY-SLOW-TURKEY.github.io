@@ -311,6 +311,7 @@ houseWall7.position.set(10, 3.5, -13);
 document.onclick = function(event) {
 controls.lock();
 shootMagnum();
+shootSniper();
 }
   
 window.onmousedown = (event) => {  
@@ -358,6 +359,7 @@ if (k == 'e' && gameLoaded) {playerInGame = true; spawnInGame();}
 if (k == ' ') {if (collideSolids(bottom(cube))) {jumping = 10;}}
 if (k == '1') {gun = 'machine gun';}
 if (k == '2') {gun = 'magnum';}
+if (k == '3') {gun = 'sniper';}
 }
 
 function keyUp(event) {
@@ -476,6 +478,14 @@ window.onresize = function() {
 var reloadTime = 0;
 function shootMachineGun() {
 if (reloadTime > 0) {reloadTime--;}
+if (rightMouseDown && gun == 'sniper') {
+camera.fov = 15;
+camera.updateProjectionMatrix();
+} else {
+camera.fov = 75;
+camera.updateProjectionMatrix();
+}
+}
 if (leftMouseDown && canShoot && reloadTime <= 0 && gun == 'machine gun') {
 reloadTime = 20;
 raycaster.setFromCamera( pointer, camera );
@@ -507,6 +517,25 @@ if (Object.values(hitboxes3d)[i] == shot) {
 attackRef.set({
 target: Object.keys(hitboxes3d)[i],
 amount: Number(Math.random().toFixed(3)) * 55
+});
+}
+}
+}
+}
+}
+  
+function shootSniper() {
+if (canShoot && reloadTime <= 0 && gun == 'sniper') {
+reloadTime = 400;
+raycaster.setFromCamera( pointer, camera );
+var shot = raycaster.intersectObjects( scene.children )[0];
+if (shot != undefined) {
+shot = shot.object;
+for(i = 0; i < Object.values(hitboxes3d).length; i++) {
+if (Object.values(hitboxes3d)[i] == shot) {
+attackRef.set({
+target: Object.keys(hitboxes3d)[i],
+amount: Number(Math.random().toFixed(3)) * 200
 });
 }
 }
@@ -692,7 +721,7 @@ function startTimer2() {document.getElementById('countdown').innerHTML = '1'; se
 function startTimer3() {document.getElementById('countdown').innerHTML = 'Battle!'; setTimeout(startTimer4, 1000); canMove = true; canShoot = true;}
 function startTimer4() {document.getElementById('countdown').innerHTML = '';}
   
-console.log('test 63');
+console.log('test 64');
 
 // credits
 // "Swat" (https://skfb.ly/6FTNV) by doctortex is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
