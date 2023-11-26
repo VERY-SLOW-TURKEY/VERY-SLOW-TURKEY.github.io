@@ -1,0 +1,282 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Neon Escape</title>
+</head>
+<body>
+<script src="2d game builder.js"></script>
+<script>
+
+var gameStarted = false;
+var gameOver = false;
+// scores
+var scoreMili = 0;
+var scoreSec = 0;
+// background
+var background = newActor(gameScreen.width, gameScreen.height, 'black');
+background.x = gameScreen.width / 2;
+background.y = gameScreen.height / 2;
+background.collidable = false;
+// player
+var playerImg = new Image();
+playerImg.src = 'neon player.svg';
+var player = newActor(50, 50, 'white', playerImg);
+player.x = gameScreen.width / 2;
+player.y = gameScreen.height / 2;
+player.edgeBorder = true;
+player.collidesActors = true;
+player.health = 100;
+// enemy color images
+// blue
+var blueImg = new Image();
+blueImg.src = 'blue enemy.svg';
+// orange
+var orangeImg = new Image();
+orangeImg.src = 'orange enemy.svg';
+// purple
+var purpleImg = new Image();
+purpleImg.src = 'purple enemy.svg';
+// white
+var whiteImg = new Image();
+whiteImg.src = 'white enemy.svg';
+// yellow
+var yellowImg = new Image();
+yellowImg.src = 'yellow enemy.svg';
+// colors in array
+var colors = [blueImg, orangeImg, purpleImg, whiteImg, yellowImg];
+// all enemies
+var enemies = [];
+// all sparks
+var sparks = [];
+var endSparks = 50;
+// spawn starting enemy
+spawnEnemy();
+// all audio
+var soundVolume = 0.25;
+var sparkSound = new Audio('spark.mp3');
+sparkSound.volume = soundVolume * 2;
+var explosionSound = new Audio('explosion2.wav');
+explosionSound.volume = soundVolume;
+var bgLoopSound = new Audio('bg music.mp3');
+bgLoopSound.volume = soundVolume;
+bgLoopSound.loop = true;
+
+function gameLoop() {
+if (gameOver) {
+moveSparksOut();
+endScreen();
+} else {
+movePlayer();
+displayText();
+if (gameStarted) {
+countScore();
+moveEnemies();
+playerDie();
+moveSparks();
+}
+}
+}
+
+function movePlayer() {
+if (!gameStarted) {
+if (keyHeld.ArrowUp || keyHeld.ArrowDown || keyHeld.ArrowLeft || keyHeld.ArrowRight) {
+bgLoopSound.play();
+}
+}
+if (keyHeld.ArrowUp) {
+gameStarted = true;
+player.y -= 6;
+player.rotation = 0;
+}
+if (keyHeld.ArrowDown) {
+gameStarted = true;
+player.y += 6;
+player.rotation = 180;
+}
+if (keyHeld.ArrowLeft) {
+gameStarted = true;
+player.x -= 6;
+player.rotation = 270;
+}
+if (keyHeld.ArrowRight) {
+gameStarted = true;
+player.x += 6;
+player.rotation = 90;
+}
+if (keyHeld.ArrowUp && keyHeld.ArrowRight) {
+player.rotation = 45;
+}
+if (keyHeld.ArrowUp && keyHeld.ArrowLeft) {
+player.rotation = 315;
+}
+if (keyHeld.ArrowDown && keyHeld.ArrowRight) {
+player.rotation = 135;
+}
+if (keyHeld.ArrowDown && keyHeld.ArrowLeft) {
+player.rotation = 225;
+}
+}
+
+function displayText() {
+if (!gameStarted) {
+if (localStorage.getItem('highScore')) {
+var displayHi = localStorage.getItem('highScore');
+} else {
+var displayHi = 0;
+}
+c.font = `${units(40)}px sans-serif`;
+c.textAlign = 'center';
+c.fillText(`HIGH SCORE: ${displayHi}`, units(gameScreen.width / 2), units(50));
+c.font = `${units(30)}px sans-serif`;
+c.fillText('MOVE TO START', units(gameScreen.width / 2), units(gameScreen.height - 100));
+}
+}
+
+function countScore() {
+c.font = `${units(50)}px sans-serif`;
+c.textAlign = 'center';
+c.fillText(scoreSec, units(gameScreen.width / 2), units(50));
+scoreMili ++;
+scoreSec = Math.round(scoreMili / 60);
+if (scoreMili % 600 == 0) {
+spawnEnemy();
+}
+}
+
+function spawnEnemy() {
+let enemy = newActor(50, 50, 'white', colors[randNum(colors.length)]);
+enemy.speed = Math.round((Math.random() * 5) * 100) / 100;
+enemy.collidesActors = true;
+if (randNum(2)) {
+enemy.y = gameScreen.height + 30;
+} else {
+enemy.y = -30;
+}
+enemy.x = Math.round(Math.random() * gameScreen.width);
+enemies.push(enemy);
+}
+
+function moveEnemies() {
+let sparkCreated = false;
+for (i=0; i < enemies.length; i++) {
+enemies[i].lookAt(player);
+enemies[i].move(enemies[i].speed);
+if (enemies[i].collide(player)) {
+player.health -= 6;
+createSpark();
+sparkCreated = true;
+}
+}
+if (sparkCreated) {
+sparkSound.play();
+} else {
+sparkSound.pause();
+}
+}
+
+function createSpark(start=15) {
+let spark = newActor(5, 5, '#' + Math.floor(Math.random()*16777215).toString(16));
+spark.rotation = randNum(360);
+spark.disToMove = start;
+spark.collidable = false;
+sparks.push(spark);
+}
+
+function moveSparks() {
+for (i=0; i < sparks.length; i++) {
+if (sparks[i].disToMove > 0) {
+sparks[i].x = player.x;
+sparks[i].y = player.y;
+sparks[i].move(sparks[i].disToMove * 3);
+sparks[i].disToMove --;
+} else {
+sparks[i].deleteActor();
+sparks.splice(sparks.indexOf(sparks[i]), 1);
+}
+}
+}
+
+function moveSparksOut() {
+for (i=0; i < sparks.length; i++) {
+if (sparks[i].disToMove < 40) {
+sparks[i].x = player.x;
+sparks[i].y = player.y;
+sparks[i].move(sparks[i].disToMove * 3);
+sparks[i].disToMove ++;
+} else {
+sparks[i].deleteActor();
+sparks.splice(sparks.indexOf(sparks[i]), 1);
+}
+}
+}
+
+function playerDie() {
+if (player.health <= 0) {
+bgLoopSound.volume = soundVolume - 0.1;
+sparkSound.pause();
+explosionSound.play();
+player.visible = false;
+gameOver = true;
+if (localStorage.getItem('highScore') < scoreSec) {
+localStorage.setItem('highScore', scoreSec);
+}
+}
+player.health += 1;
+if (player.health > 100) {
+player.health = 100;
+}
+}
+
+function endScreen() {
+if (endSparks > 0) {
+createSpark(5);
+createSpark(5);
+endSparks --;
+}
+c.font = `${units(30)}px sans-serif`;
+c.textAlign = 'center';
+c.fillText(`HIGH SCORE: ${localStorage.getItem('highScore')}`, units(gameScreen.width / 2), units(50));
+c.font = `${units(20)}px sans-serif`;
+c.fillText('PRESS SPACE TO PLAY AGAIN', units(gameScreen.width / 2), units(gameScreen.height - 60));
+c.font = `${units(80)}px sans-serif`;
+c.fillStyle = 'red';
+c.strokeStyle = 'black';
+c.lineWidth = 3;
+c.fillText('GAME OVER', units(gameScreen.width / 2), units(gameScreen.height / 2));
+c.strokeText('GAME OVER', units(gameScreen.width / 2), units(gameScreen.height / 2));
+}
+
+
+
+function keyPressed(event) {
+if (gameOver && event.key == ' ') {
+bgLoopSound.volume = soundVolume;
+gameStarted = false;
+gameOver = false;
+// scores
+scoreMili = 0;
+scoreSec = 0;
+player.x = gameScreen.width / 2;
+player.y = gameScreen.height / 2;
+player.health = 100;
+player.visible = true;
+player.rotation = 0;
+// all enemies
+for (i=0; i < enemies.length; i++) {
+enemies[i].deleteActor();
+}
+enemies = [];
+// all sparks
+for (i=0; i < sparks.length; i++) {
+sparks[i].deleteActor();
+}
+sparks = [];
+var endSparks = 50;
+// spawn starting enemy
+spawnEnemy();
+}
+}
+
+</script>
+</body>
+</html>
